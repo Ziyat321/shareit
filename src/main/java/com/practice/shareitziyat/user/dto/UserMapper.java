@@ -3,6 +3,8 @@ package com.practice.shareitziyat.user.dto;
 import com.practice.shareitziyat.user.User;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class UserMapper {
     public User fromCreate(UserCreateDto userCreate){
@@ -25,6 +27,12 @@ public class UserMapper {
         response.setName(user.getName());
         response.setEmail(user.getEmail());
         return response;
+    }
+
+    public List<UserResponseDto> toResponse(List<User> users){
+        return users.stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     public void merge(User existingUser, User updatedUser){

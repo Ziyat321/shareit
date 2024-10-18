@@ -6,17 +6,16 @@ import com.practice.shareitziyat.user.dto.UserResponseDto;
 import com.practice.shareitziyat.user.dto.UserUpdateDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
-    // POST /users
-    // PATCH /users/{userId}
-    // GET /users/{userId}
-    // GET /users
-    // DELETE /users/{userId}
     private final UserService userService;
     private final UserMapper userMapper;
 
@@ -30,8 +29,24 @@ public class UserController {
     public UserResponseDto update (
             @PathVariable int userId,
             @Valid @RequestBody UserUpdateDto userUpdate){
+        log.debug("PATCH /users/{}", userId);
         return userMapper.toResponse(
                 userService.update(userMapper.fromUpdate(userUpdate), userId)
         );
+    }
+
+    @GetMapping
+    public List<UserResponseDto> findAll(){
+        return userMapper.toResponse(userService.findAll());
+    }
+
+    @GetMapping("/{userId}")
+    public UserResponseDto findById(@PathVariable int userId){
+        return userMapper.toResponse(userService.findById(userId));
+    }
+
+    @DeleteMapping("/{userId}")
+    public void deleteById(@PathVariable int userId){
+        userService.deleteById(userId);
     }
 }
