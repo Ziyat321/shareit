@@ -9,9 +9,9 @@ public interface ItemRepository {
 
         Item findById(int itemId);
 
-        List<Item> findAll();
+        List<Item> findAll(int userId);
 
-        Item search(String text);
+        List<Item> search(String text);
 
         void deleteById(int itemId);
 }

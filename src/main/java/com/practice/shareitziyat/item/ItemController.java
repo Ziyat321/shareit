@@ -1,16 +1,56 @@
 package com.practice.shareitziyat.item;
 
-import com.practice.shareitziyat.user.User;
+import com.practice.shareitziyat.item.dto.ItemCreateDto;
+import com.practice.shareitziyat.item.dto.ItemMapper;
+import com.practice.shareitziyat.item.dto.ItemResponseDto;
+import com.practice.shareitziyat.item.dto.ItemUpdateDto;
 import com.practice.shareitziyat.utils.RequestConstants;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@RestController
+@RequestMapping("/items")
+@RequiredArgsConstructor
 public class ItemController {
-    @GetMapping
-    public String test(
-            @RequestHeader(RequestConstants.USER_HEADER) int userId
-    ){
-        System.out.println(userId);
-        return "user: " + userId;
+    private final ItemService itemService;
+    private final ItemMapper itemMapper;
+
+    @PostMapping
+    public ItemResponseDto create(@Valid @RequestBody ItemCreateDto itemCreate,
+                                  @RequestHeader(RequestConstants.USER_HEADER) int userId){
+        return itemMapper.toResponse(
+                itemService.create(itemMapper.fromCreate(itemCreate), userId));
     }
+
+    @PatchMapping("/{itemId}")
+    public ItemResponseDto update (@PathVariable int itemId,
+                                   @RequestBody ItemUpdateDto itemUpdate,
+                                   @RequestHeader(RequestConstants.USER_HEADER) int userId){
+        return itemMapper.toResponse(
+                itemService.update(itemMapper.fromUpdate(itemUpdate), itemId, userId)
+        );
+    }
+
+    @GetMapping
+    public List<ItemResponseDto> findAll(@RequestHeader(RequestConstants.USER_HEADER) int userId){
+        return itemMapper.toResponse(itemService.findAll(userId));
+    }
+
+    @GetMapping("/{itemId}")
+    public ItemResponseDto findById(@PathVariable int itemId){
+        return itemMapper.toResponse(itemService.findById(itemId));
+    }
+
+    @DeleteMapping("{itemId}")
+    public void deleteById(@PathVariable int itemId){
+        itemService.deleteById(itemId);
+    }
+
+//    @GetMapping
+//    public ItemResponseDto search(@RequestParam String text){
+//        return itemMapper.toResponse(itemService.search(text));
+//    }
 }
