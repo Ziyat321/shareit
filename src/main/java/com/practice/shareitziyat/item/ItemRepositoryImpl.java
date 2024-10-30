@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,13 +42,15 @@ public class ItemRepositoryImpl implements ItemRepository{
     public List<Item> findAll(int userId) {
         return itemMap.values()
                 .stream()
-//                .filter()
+                .filter(item -> item.getOwner().getId() == userId)
                 .toList();
     }
 
     @Override
     public List<Item> search(String text) {
-
+        if(StringUtils.isBlank(text)) {
+            return new ArrayList<>();
+        }
         // Проверка
         // если text пустой, возвращаем пустой список
 
@@ -60,7 +63,9 @@ public class ItemRepositoryImpl implements ItemRepository{
 
         return itemMap.values()
                 .stream()
-                .filter(item -> item.getName().equals(text) || item.getDescription().equals(text))
+                .filter(Item::isAvailable)
+                .filter(item -> StringUtils.containsIgnoreCase(item.getName(), text)
+                        || StringUtils.containsIgnoreCase(item.getDescription(), text))
                 .toList();
     }
 

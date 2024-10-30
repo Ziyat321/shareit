@@ -1,6 +1,8 @@
 package com.practice.shareitziyat.item;
 
 import com.practice.shareitziyat.exceptions.NotFoundException;
+import com.practice.shareitziyat.exceptions.WrongOwnerException;
+import com.practice.shareitziyat.user.UserRepository;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
@@ -12,19 +14,27 @@ import java.util.Optional;
 @Data
 public class ItemServiceImpl implements ItemService{
     private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Item create(Item item, int userId) {
         // существует ли пользователь userId
-
-//        item.setOwner(...);
+        if(userRepository.findById(userId) == null){
+            throw new NotFoundException("User not found");
+        }
+        item.setOwner(userRepository.findById(userId));
         return itemRepository.create(item);
     }
 
     @Override
     public Item update(Item updatedItem, int itemId, int userId) {
         // существует ли пользователь userId
-
+        if(userRepository.findById(userId) == null){
+            throw new NotFoundException("User not found");
+        }
+        if(itemRepository.findById(itemId).getOwner().getId() != userId){
+            throw new WrongOwnerException("Wrong owner");
+        }
         // проверить, является ли данный пользователь автором предмета (статус 403)
         return itemRepository.update(updatedItem, itemId);
     }
@@ -36,11 +46,7 @@ public class ItemServiceImpl implements ItemService{
 
     @Override
     public List<Item> search(String text) {
-        // todo
-        return new ArrayList<>();
-//        Optional<Item> item =  itemRepository.search(text);
-//        if(item.isEmpty()) throw new NotFoundException("Предмета с данным описанием/названием не существует");
-//        else return item.get();
+        return itemRepository.search(text);
     }
 
     @Override
@@ -51,7 +57,9 @@ public class ItemServiceImpl implements ItemService{
     @Override
     public List<Item> findAll(int userId) {
         // существует ли пользователь userId
-
+        if(userRepository.findById(userId) == null){
+            throw new NotFoundException("User not found");
+        }
         return itemRepository.findAll(userId);
     }
 }

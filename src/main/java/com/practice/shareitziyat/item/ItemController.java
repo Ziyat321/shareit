@@ -49,8 +49,8 @@ public class ItemController {
         itemService.deleteById(itemId);
     }
 
-//    @GetMapping
-//    public ItemResponseDto search(@RequestParam String text){
-//        return itemMapper.toResponse(itemService.search(text));
-//    }
+    @GetMapping
+    public List<ItemResponseDto> search(@RequestParam String text){
+        return itemMapper.toResponse(itemService.search(text));
+    }
 }
