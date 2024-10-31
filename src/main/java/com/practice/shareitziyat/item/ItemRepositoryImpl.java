@@ -9,11 +9,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 @Component
 @RequiredArgsConstructor
-public class ItemRepositoryImpl implements ItemRepository{
+public class ItemRepositoryImpl implements ItemRepository {
     private final Map<Integer, Item> itemMap = new HashMap<>();
     private final ItemMapper itemMapper;
 
@@ -40,15 +39,12 @@ public class ItemRepositoryImpl implements ItemRepository{
 
     @Override
     public List<Item> findAll(int userId) {
-        return itemMap.values()
-                .stream()
-                .filter(item -> item.getOwner().getId() == userId)
-                .toList();
+        return itemMap.values().stream().filter(item -> item.getOwner().getId() == userId).toList();
     }
 
     @Override
     public List<Item> search(String text) {
-        if(StringUtils.isBlank(text)) {
+        if (StringUtils.isBlank(text)) {
             return new ArrayList<>();
         }
         // Проверка
@@ -61,12 +57,7 @@ public class ItemRepositoryImpl implements ItemRepository{
 
         // StringUtils.containsIgnoreCase(item.getName(), text);
 
-        return itemMap.values()
-                .stream()
-                .filter(Item::isAvailable)
-                .filter(item -> StringUtils.containsIgnoreCase(item.getName(), text)
-                        || StringUtils.containsIgnoreCase(item.getDescription(), text))
-                .toList();
+        return itemMap.values().stream().filter(Item::getAvailable).filter(item -> StringUtils.containsIgnoreCase(item.getName(), text) || StringUtils.containsIgnoreCase(item.getDescription(), text)).toList();
     }
 
     @Override

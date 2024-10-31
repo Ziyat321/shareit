@@ -6,20 +6,18 @@ import com.practice.shareitziyat.user.UserRepository;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @Data
-public class ItemServiceImpl implements ItemService{
+public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
     @Override
     public Item create(Item item, int userId) {
         // существует ли пользователь userId
-        if(userRepository.findById(userId) == null){
+        if (userRepository.findById(userId) == null) {
             throw new NotFoundException("User not found");
         }
         item.setOwner(userRepository.findById(userId));
@@ -29,10 +27,10 @@ public class ItemServiceImpl implements ItemService{
     @Override
     public Item update(Item updatedItem, int itemId, int userId) {
         // существует ли пользователь userId
-        if(userRepository.findById(userId) == null){
+        if (userRepository.findById(userId) == null) {
             throw new NotFoundException("User not found");
         }
-        if(itemRepository.findById(itemId).getOwner().getId() != userId){
+        if (itemRepository.findById(itemId).getOwner().getId() != userId) {
             throw new WrongOwnerException("Wrong owner");
         }
         // проверить, является ли данный пользователь автором предмета (статус 403)
@@ -57,7 +55,7 @@ public class ItemServiceImpl implements ItemService{
     @Override
     public List<Item> findAll(int userId) {
         // существует ли пользователь userId
-        if(userRepository.findById(userId) == null){
+        if (userRepository.findById(userId) == null) {
             throw new NotFoundException("User not found");
         }
         return itemRepository.findAll(userId);

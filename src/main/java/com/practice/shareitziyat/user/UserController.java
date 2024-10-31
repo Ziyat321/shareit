@@ -20,15 +20,15 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping
-    public UserResponseDto create (@Valid @RequestBody UserCreateDto userCreate){
+    public UserResponseDto create(@Valid @RequestBody UserCreateDto userCreate) {
         return userMapper.toResponse(
                 userService.create(userMapper.fromCreate(userCreate)));
     }
 
     @PatchMapping("/{userId}")
-    public UserResponseDto update (
+    public UserResponseDto update(
             @PathVariable int userId,
-            @Valid @RequestBody UserUpdateDto userUpdate){
+            @Valid @RequestBody UserUpdateDto userUpdate) {
         log.debug("PATCH /users/{}", userId);
         return userMapper.toResponse(
                 userService.update(userMapper.fromUpdate(userUpdate), userId)
@@ -36,17 +36,17 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserResponseDto> findAll(){
+    public List<UserResponseDto> findAll() {
         return userMapper.toResponse(userService.findAll());
     }
 
     @GetMapping("/{userId}")
-    public UserResponseDto findById(@PathVariable int userId){
+    public UserResponseDto findById(@PathVariable int userId) {
         return userMapper.toResponse(userService.findById(userId));
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteById(@PathVariable int userId){
+    public void deleteById(@PathVariable int userId) {
         userService.deleteById(userId);
     }
 }

@@ -7,21 +7,21 @@ import java.util.List;
 
 @Component
 public class UserMapper {
-    public User fromCreate(UserCreateDto userCreate){
+    public User fromCreate(UserCreateDto userCreate) {
         User user = new User();
         user.setName(userCreate.getName());
         user.setEmail(userCreate.getEmail());
         return user;
     }
 
-    public User fromUpdate(UserUpdateDto userUpdate){
+    public User fromUpdate(UserUpdateDto userUpdate) {
         User user = new User();
         user.setName(userUpdate.getName());
         user.setEmail(userUpdate.getEmail());
         return user;
     }
 
-    public UserResponseDto toResponse(User user){
+    public UserResponseDto toResponse(User user) {
         UserResponseDto response = new UserResponseDto();
         response.setId(user.getId());
         response.setName(user.getName());
@@ -29,17 +29,17 @@ public class UserMapper {
         return response;
     }
 
-    public List<UserResponseDto> toResponse(List<User> users){
+    public List<UserResponseDto> toResponse(List<User> users) {
         return users.stream()
                 .map(this::toResponse)
                 .toList();
     }
 
-    public void merge(User existingUser, User updatedUser){
-        if(updatedUser.getName() != null){
+    public void merge(User existingUser, User updatedUser) {
+        if (updatedUser.getName() != null) {
             existingUser.setName(updatedUser.getName());
         }
-        if(updatedUser.getEmail() != null){
+        if (updatedUser.getEmail() != null) {
             existingUser.setEmail(updatedUser.getEmail());
         }
     }

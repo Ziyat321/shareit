@@ -10,5 +10,5 @@ public class ItemResponseDto {
     int id;
     String name;
     String description;
-    boolean available;
+    Boolean available;
 }
