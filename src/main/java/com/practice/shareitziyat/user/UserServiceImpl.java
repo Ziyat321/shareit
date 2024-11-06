@@ -11,7 +11,7 @@ import java.util.Optional;
 @Component
 @Data
 public class UserServiceImpl implements UserService {
-    private final UserRepository userRepository;
+    private final UserRepositoryImpl userRepository;
     private final UserMapper userMapper;
 
     @Override

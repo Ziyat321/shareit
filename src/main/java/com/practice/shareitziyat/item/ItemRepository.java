@@ -1,17 +1,8 @@
 package com.practice.shareitziyat.item;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ItemRepository {
-        Item create(Item item);
 
-        Item update(Item updatedItem, int itemId);
+public interface ItemRepository extends JpaRepository<Item, Integer> {
 
-        Item findById(int itemId);
-
-        List<Item> findAll(int userId);
-
-        List<Item> search(String text);
-
-        void deleteById(int itemId);
 }

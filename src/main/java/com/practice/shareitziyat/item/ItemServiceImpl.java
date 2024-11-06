@@ -3,6 +3,7 @@ package com.practice.shareitziyat.item;
 import com.practice.shareitziyat.exceptions.NotFoundException;
 import com.practice.shareitziyat.exceptions.WrongOwnerException;
 import com.practice.shareitziyat.user.UserRepository;
+import com.practice.shareitziyat.user.UserRepositoryImpl;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
@@ -11,8 +12,8 @@ import java.util.List;
 @Component
 @Data
 public class ItemServiceImpl implements ItemService {
-    private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
+    private final ItemRepositoryImpl itemRepository;
+    private final UserRepositoryImpl userRepository;
 
     @Override
     public Item create(Item item, int userId) {

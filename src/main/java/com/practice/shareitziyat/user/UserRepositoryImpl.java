@@ -1,5 +1,6 @@
 package com.practice.shareitziyat.user;
 
+import com.practice.shareitziyat.exceptions.NotFoundException;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
@@ -10,38 +11,35 @@ import java.util.Optional;
 
 @Component
 @Data
-public class UserRepositoryImpl implements UserRepository {
-    private final Map<Integer, User> userMap = new HashMap<>();
-    private int uniqueId = 1;
+public class UserRepositoryImpl{
+    private final UserRepository userRepository;
 
-    @Override
+
     public User create(User user) {
-        user.setId(uniqueId++);
-        userMap.put(user.getId(), user);
+        userRepository.save(user);
         return user;
     }
 
 
 
-    @Override
+
     public User findById(int userId) {
-        return userMap.get(userId);
+        return userRepository.findById(userId)
+                .orElseThrow(()-> new NotFoundException("User not found"));
     }
 
-    @Override
+
     public List<User> findAll() {
-        return userMap.values().stream().toList();
+        return userRepository.findAll();
     }
 
-    @Override
+
     public void deleteById(int userId) {
-        userMap.remove(userId);
+        userRepository.deleteById(userId);
     }
 
-    @Override
+
     public Optional<User> findByEmail(String email) {
-        return userMap.values().stream()
-                .filter(user -> user.getEmail().equals(email))
-                .findFirst();
+        return userRepository.findByEmail(email);
     }
 }

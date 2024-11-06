@@ -1,5 +1,6 @@
 package com.practice.shareitziyat.item;
 
+import com.practice.shareitziyat.exceptions.NotFoundException;
 import com.practice.shareitziyat.item.dto.ItemMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -12,37 +13,37 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class ItemRepositoryImpl implements ItemRepository {
-    private final Map<Integer, Item> itemMap = new HashMap<>();
+public class ItemRepositoryImpl{
+    private final ItemRepository itemRepository;
     private final ItemMapper itemMapper;
 
-    private int uniqueId = 1;
 
-    @Override
+
     public Item create(Item item) {
-        item.setId(uniqueId++);
-        itemMap.put(item.getId(), item);
+        itemRepository.save(item);
         return item;
     }
 
-    @Override
+
     public Item update(Item updatedItem, int itemId) {
-        Item existingItem = itemMap.get(itemId);
+        Item existingItem = findById(itemId);
         itemMapper.merge(existingItem, updatedItem);
         return existingItem;
     }
 
-    @Override
+
     public Item findById(int itemId) {
-        return itemMap.get(itemId);
+        return itemRepository.findById(itemId)
+                .orElseThrow(()-> new NotFoundException("Item not found"));
     }
 
-    @Override
+
     public List<Item> findAll(int userId) {
-        return itemMap.values().stream().filter(item -> item.getOwner().getId() == userId).toList();
+        return itemRepository.findAll()
+                .stream().filter(item -> item.getOwner().getId() == userId).toList();
     }
 
-    @Override
+
     public List<Item> search(String text) {
         if (StringUtils.isBlank(text)) {
             return new ArrayList<>();
@@ -57,11 +58,12 @@ public class ItemRepositoryImpl implements ItemRepository {
 
         // StringUtils.containsIgnoreCase(item.getName(), text);
 
-        return itemMap.values().stream().filter(Item::getAvailable).filter(item -> StringUtils.containsIgnoreCase(item.getName(), text) || StringUtils.containsIgnoreCase(item.getDescription(), text)).toList();
+        return itemRepository.findAll()
+                .stream().filter(Item::getAvailable).filter(item -> StringUtils.containsIgnoreCase(item.getName(), text) || StringUtils.containsIgnoreCase(item.getDescription(), text)).toList();
     }
 
-    @Override
+
     public void deleteById(int itemId) {
-        itemMap.remove(itemId);
+        itemRepository.deleteById(itemId);
     }
 }
