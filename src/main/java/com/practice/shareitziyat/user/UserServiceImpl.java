@@ -1,5 +1,6 @@
 package com.practice.shareitziyat.user;
 
+import com.practice.shareitziyat.exceptions.NotFoundException;
 import com.practice.shareitziyat.exceptions.UserAlreadyExistsException;
 import com.practice.shareitziyat.user.dto.UserMapper;
 import lombok.Data;
@@ -11,13 +12,14 @@ import java.util.Optional;
 @Component
 @Data
 public class UserServiceImpl implements UserService {
-    private final UserRepositoryImpl userRepository;
+    private final UserRepository userRepository;
     private final UserMapper userMapper;
 
     @Override
     public User create(User user) {
         checkEmail(user);
-        return userRepository.create(user);
+        userRepository.save(user);
+        return user;
     }
 
     @Override
@@ -25,14 +27,16 @@ public class UserServiceImpl implements UserService {
         updatedUser.setId(userId);
         checkEmail(updatedUser);
 
-        User existingUser = userRepository.findById(userId);
+        User existingUser =  findById(userId);
         userMapper.merge(existingUser, updatedUser);
+        userRepository.save(existingUser);
         return existingUser;
     }
 
     @Override
     public User findById(int userId) {
-        return userRepository.findById(userId);
+        return userRepository.findById(userId)
+                .orElseThrow(()-> new NotFoundException("User not found"));
     }
 
     @Override
@@ -42,6 +46,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteById(int userId) {
+
         userRepository.deleteById(userId);
     }
 
