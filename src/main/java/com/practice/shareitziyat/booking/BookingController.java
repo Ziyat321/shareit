@@ -46,6 +46,16 @@ public class BookingController {
     @GetMapping("/bookings")
     public List<BookingResponseDto> findAllByBooker(@RequestParam(defaultValue = "ALL") BookingState state,
                                                     @RequestHeader(RequestConstants.USER_HEADER) int userId){
+        return bookingMapper.toResponse(
+                bookingService.findAllByBooker(userId, state)
+        );
+    }
 
+    @GetMapping("/bookings/owner")
+    public List<BookingResponseDto> findAllByOwner(@RequestParam(defaultValue = "ALL") BookingState state,
+                                                   @RequestHeader(RequestConstants.USER_HEADER) int ownerId){
+        return bookingMapper.toResponse(
+                bookingService.findAllByOwner(ownerId, state)
+        );
     }
 }

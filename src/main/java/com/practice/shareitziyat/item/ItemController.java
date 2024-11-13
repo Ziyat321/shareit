@@ -1,9 +1,6 @@
 package com.practice.shareitziyat.item;
 
-import com.practice.shareitziyat.item.dto.ItemCreateDto;
-import com.practice.shareitziyat.item.dto.ItemMapper;
-import com.practice.shareitziyat.item.dto.ItemResponseDto;
-import com.practice.shareitziyat.item.dto.ItemUpdateDto;
+import com.practice.shareitziyat.item.dto.*;
 import com.practice.shareitziyat.utils.RequestConstants;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +14,7 @@ import java.util.List;
 public class ItemController {
     private final ItemService itemService;
     private final ItemMapper itemMapper;
+    private final CommentMapper commentMapper;
 
     @PostMapping
     public ItemResponseDto create(@Valid @RequestBody ItemCreateDto itemCreate,
@@ -53,4 +51,24 @@ public class ItemController {
     public List<ItemResponseDto> search(@RequestParam String text) {
         return itemMapper.toResponse(itemService.search(text));
     }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentResponseDto createComment(@PathVariable int itemId,
+                                            @Valid @RequestBody CommentCreateDto commentCreate,
+                                            @RequestHeader(RequestConstants.USER_HEADER) int userId) {
+        return commentMapper.toResponse(
+                itemService.createComment(commentMapper.fromCreate(commentCreate), itemId, userId)
+        );
+    }
+
+    @GetMapping("/comments/{userId}")
+    public List<CommentResponseDto> findCommentsByUser(@PathVariable int userId) {
+        return commentMapper.toResponse(itemService.findCommentsByUser(userId));
+    }
+
+    @GetMapping("/comments/{itemId}")
+    public List<CommentResponseDto> findCommentsByItem(@PathVariable int itemId) {
+        return commentMapper.toResponse(itemService.findCommentsByItem(itemId));
+    }
 }
+

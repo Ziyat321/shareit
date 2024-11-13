@@ -14,4 +14,10 @@ public interface ItemService {
     void deleteById(int itemId);
 
     List<Item> findAll(int userId);
+
+    Comment createComment(Comment comment, int itemId, int userId);
+
+    List<Comment> findCommentsByUser(int userId);
+
+    List<Comment> findCommentsByItem(int itemId);
 }

@@ -17,6 +17,7 @@ import java.util.List;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
     private final ItemMapper itemMapper;
 
     @Override
@@ -66,6 +67,25 @@ public class ItemServiceImpl implements ItemService {
         // существует ли пользователь userId
         findUserById(userId);
         return itemRepository.findAllByOwner_Id(userId);
+    }
+
+    @Override
+    public Comment createComment(Comment comment, int itemId, int userId) {
+        findUserById(userId);
+        comment.getItem().setId(itemId);
+        return commentRepository.save(comment);
+    }
+
+    @Override
+    public List<Comment> findCommentsByUser(int userId) {
+        findUserById(userId);
+        return commentRepository.findAllByUser_Id(userId);
+    }
+
+    @Override
+    public List<Comment> findCommentsByItem(int itemId) {
+        findById(itemId);
+        return commentRepository.findAllByItem_Id(itemId);
     }
 
     private User findUserById(int userId) {
