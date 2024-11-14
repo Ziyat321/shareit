@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class BookingMapper {
-    private final ItemRepository itemRepository;
+
     private final ItemMapper itemMapper;
     private final UserMapper userMapper;
 
@@ -22,14 +22,15 @@ public class BookingMapper {
         Booking booking = new Booking();
         booking.setStartDate(bookingCreate.getStart());
         booking.setEndDate(bookingCreate.getEnd());
-        Item item = itemRepository.findById(bookingCreate.getItemId().intValue())
-                .orElseThrow(()->new NotFoundException("Item not found"));
+        Item item = new Item();
+        item.setId(bookingCreate.getItemId());
         booking.setItem(item);
         return booking;
     }
 
     public BookingResponseDto toResponse(Booking booking){
         BookingResponseDto bookingResponse = new BookingResponseDto();
+        bookingResponse.setId(booking.getId());
         bookingResponse.setStart(booking.getStartDate());
         bookingResponse.setEnd(booking.getEndDate());
         bookingResponse.setStatus(booking.getStatus());

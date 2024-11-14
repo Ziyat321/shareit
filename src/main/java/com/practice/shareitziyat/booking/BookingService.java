@@ -3,13 +3,13 @@ package com.practice.shareitziyat.booking;
 import java.util.List;
 
 public interface BookingService {
-    Booking create(Booking booking, int userId);
+    Booking create(Booking booking, Long userId);
 
-    Booking update(Booking booking, long bookingId, int userId, boolean approved);
+    Booking update( long bookingId, Long userId, boolean approved);
 
-    Booking findById(long bookingId, int userId);
+    Booking findById(long bookingId, Long userId);
 
-    List<Booking> findAllByOwner(int userId, BookingState state);
+    List<Booking> findAllByOwner(Long userId, BookingState state);
 
-    List<Booking> findAllByBooker(int userId, BookingState state);
+    List<Booking> findAllByBooker(Long userId, BookingState state);
 }

@@ -12,48 +12,46 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("bookings/")
+@RequestMapping("/bookings")
 public class BookingController {
     private final BookingService bookingService;
     private final BookingMapper bookingMapper;
 
     @PostMapping
     public BookingResponseDto create(@Valid @RequestBody BookingCreateDto bookingCreate,
-                                     @RequestHeader(RequestConstants.USER_HEADER) int userId){
+                                     @RequestHeader(RequestConstants.USER_HEADER) Long userId){
             return bookingMapper.toResponse(
                     bookingService.create(bookingMapper.fromCreate(bookingCreate), userId))
                     ;
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingResponseDto update (@Valid @RequestBody BookingCreateDto bookingCreateDto,
-                                      @PathVariable int bookingId,
+    public BookingResponseDto update ( @PathVariable int bookingId,
                                       @RequestParam boolean approved,
-                                      @RequestHeader(RequestConstants.USER_HEADER) int userId) {
+                                      @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
         return bookingMapper.toResponse(
-                bookingService.update(bookingMapper.fromCreate(bookingCreateDto), bookingId, userId, approved))
-                ;
+                bookingService.update( bookingId, userId, approved)) ;
 
     }
 
     @GetMapping("/{bookingId}")
     public BookingResponseDto findById(@PathVariable int bookingId,
-                                       @RequestHeader(RequestConstants.USER_HEADER) int userId) {
+                                       @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
         return bookingMapper.toResponse(
                 bookingService.findById(bookingId, userId));
     }
 
-    @GetMapping("/bookings")
+    @GetMapping
     public List<BookingResponseDto> findAllByBooker(@RequestParam(defaultValue = "ALL") BookingState state,
-                                                    @RequestHeader(RequestConstants.USER_HEADER) int userId){
+                                                    @RequestHeader(RequestConstants.USER_HEADER) Long userId){
         return bookingMapper.toResponse(
                 bookingService.findAllByBooker(userId, state)
         );
     }
 
-    @GetMapping("/bookings/owner")
+    @GetMapping("/owner")
     public List<BookingResponseDto> findAllByOwner(@RequestParam(defaultValue = "ALL") BookingState state,
-                                                   @RequestHeader(RequestConstants.USER_HEADER) int ownerId){
+                                                   @RequestHeader(RequestConstants.USER_HEADER) Long ownerId){
         return bookingMapper.toResponse(
                 bookingService.findAllByOwner(ownerId, state)
         );

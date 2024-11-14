@@ -20,7 +20,7 @@ import java.util.List;
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    Long id;
 
     String name;
 
@@ -37,8 +37,6 @@ public class Item {
     List<Booking> bookings;
 
     @OneToMany(mappedBy = "item")
-    List<Comment> items;
+    List<Comment> comments;
 
-    @OneToMany(mappedBy = "user")
-    List<User> users;
 }

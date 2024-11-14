@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 
-public interface ItemRepository extends JpaRepository<Item, Integer> {
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Query("select i from Item i " +
             "where (upper(i.name) like upper(concat('%', :text, '%')) " +
@@ -14,5 +14,5 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
             "and i.available = true")
     List<Item> search(String text);
 
-    List<Item> findAllByOwner_Id(int userId);
+    List<Item> findAllByOwner_Id(Long userId);
 }

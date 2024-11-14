@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemResponseDto {
-    int id;
+    Long id;
     String name;
     String description;
     Boolean available;

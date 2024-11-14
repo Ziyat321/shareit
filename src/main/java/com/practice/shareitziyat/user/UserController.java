@@ -27,7 +27,7 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public UserResponseDto update(
-            @PathVariable int userId,
+            @PathVariable Long userId,
             @Valid @RequestBody UserUpdateDto userUpdate) {
         log.debug("PATCH /users/{}", userId);
         return userMapper.toResponse(
@@ -41,12 +41,12 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public UserResponseDto findById(@PathVariable int userId) {
+    public UserResponseDto findById(@PathVariable Long userId) {
         return userMapper.toResponse(userService.findById(userId));
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteById(@PathVariable int userId) {
+    public void deleteById(@PathVariable Long userId) {
         userService.deleteById(userId);
     }
 }

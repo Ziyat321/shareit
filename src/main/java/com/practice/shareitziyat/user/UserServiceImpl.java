@@ -7,6 +7,7 @@ import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -23,7 +24,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User update(User updatedUser, int userId) {
+    public User update(User updatedUser, Long userId) {
         updatedUser.setId(userId);
         checkEmail(updatedUser);
 
@@ -34,7 +35,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(int userId) {
+    public User findById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(()-> new NotFoundException("User not found"));
     }
@@ -45,7 +46,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteById(int userId) {
+    public void deleteById(Long userId) {
 
         userRepository.deleteById(userId);
     }
@@ -57,7 +58,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User found = optionalUser.get();
-        if (found.getId() != user.getId()) {
+        if (!Objects.equals(found.getId(), user.getId())) {
             throw new UserAlreadyExistsException("Пользователь с email:" + user.getEmail() + "уже существует");
         }
     }

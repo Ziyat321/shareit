@@ -18,32 +18,32 @@ public class ItemController {
 
     @PostMapping
     public ItemResponseDto create(@Valid @RequestBody ItemCreateDto itemCreate,
-                                  @RequestHeader(RequestConstants.USER_HEADER) int userId) {
+                                  @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
         return itemMapper.toResponse(
                 itemService.create(itemMapper.fromCreate(itemCreate), userId));
     }
 
     @PatchMapping("/{itemId}")
-    public ItemResponseDto update(@PathVariable int itemId,
+    public ItemResponseDto update(@PathVariable Long itemId,
                                   @RequestBody ItemUpdateDto itemUpdate,
-                                  @RequestHeader(RequestConstants.USER_HEADER) int userId) {
+                                  @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
         return itemMapper.toResponse(
                 itemService.update(itemMapper.fromUpdate(itemUpdate), itemId, userId)
         );
     }
 
     @GetMapping
-    public List<ItemResponseDto> findAll(@RequestHeader(RequestConstants.USER_HEADER) int userId) {
+    public List<ItemResponseDto> findAll(@RequestHeader(RequestConstants.USER_HEADER) Long userId) {
         return itemMapper.toResponse(itemService.findAll(userId));
     }
 
     @GetMapping("/{itemId}")
-    public ItemResponseDto findById(@PathVariable int itemId) {
+    public ItemResponseDto findById(@PathVariable Long itemId) {
         return itemMapper.toResponse(itemService.findById(itemId));
     }
 
     @DeleteMapping("{itemId}")
-    public void deleteById(@PathVariable int itemId) {
+    public void deleteById(@PathVariable Long itemId) {
         itemService.deleteById(itemId);
     }
 
@@ -53,21 +53,21 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentResponseDto createComment(@PathVariable int itemId,
+    public CommentResponseDto createComment(@PathVariable Long itemId,
                                             @Valid @RequestBody CommentCreateDto commentCreate,
-                                            @RequestHeader(RequestConstants.USER_HEADER) int userId) {
+                                            @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
         return commentMapper.toResponse(
                 itemService.createComment(commentMapper.fromCreate(commentCreate), itemId, userId)
         );
     }
 
     @GetMapping("/comments/{userId}")
-    public List<CommentResponseDto> findCommentsByUser(@PathVariable int userId) {
+    public List<CommentResponseDto> findCommentsByUser(@PathVariable Long userId) {
         return commentMapper.toResponse(itemService.findCommentsByUser(userId));
     }
 
     @GetMapping("/comments/{itemId}")
-    public List<CommentResponseDto> findCommentsByItem(@PathVariable int itemId) {
+    public List<CommentResponseDto> findCommentsByItem(@PathVariable Long itemId) {
         return commentMapper.toResponse(itemService.findCommentsByItem(itemId));
     }
 }
