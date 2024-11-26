@@ -1,6 +1,7 @@
 package com.practice.shareitziyat.item;
 
 import com.practice.shareitziyat.booking.Booking;
+import com.practice.shareitziyat.request.Request;
 import com.practice.shareitziyat.user.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -38,5 +39,9 @@ public class Item {
 
     @OneToMany(mappedBy = "item")
     List<Comment> comments;
+
+    @ManyToOne
+    @JoinColumn(name = "request_id")
+    Request request;
 
 }

@@ -1,6 +1,7 @@
 package com.practice.shareitziyat.item.dto;
 
 import com.practice.shareitziyat.item.Item;
+import com.practice.shareitziyat.request.Request;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,9 @@ public class ItemMapper {
         item.setName(itemCreate.getName());
         item.setDescription(itemCreate.getDescription());
         item.setAvailable(itemCreate.getAvailable());
+        Request request = new Request();
+        request.setId(itemCreate.getRequestId());
+        item.setRequest(request);
         return item;
     }
 
@@ -36,6 +40,9 @@ public class ItemMapper {
         itemResponse.setAvailable(item.getAvailable());
         if(item.getComments() != null) {
             itemResponse.setComments(commentMapper.toResponse(item.getComments()));
+        }
+        if(item.getRequest() != null) {
+            itemResponse.setRequestId(item.getRequest().getId());
         }
         return itemResponse;
     }

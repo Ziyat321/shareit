@@ -7,6 +7,8 @@ import com.practice.shareitziyat.exceptions.BadRequestException;
 import com.practice.shareitziyat.exceptions.NotFoundException;
 import com.practice.shareitziyat.exceptions.ForbiddenException;
 import com.practice.shareitziyat.item.dto.ItemMapper;
+import com.practice.shareitziyat.request.Request;
+import com.practice.shareitziyat.request.RequestRepository;
 import com.practice.shareitziyat.user.User;
 import com.practice.shareitziyat.user.UserRepository;
 import lombok.Data;
@@ -24,11 +26,18 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
+    private final RequestRepository requestRepository;
     private final ItemMapper itemMapper;
 
     @Override
 
     public Item create(Item item, Long userId) {
+        Long requestId = item.getRequest().getId();
+        if(requestId != null) {
+            Request request = requestRepository.findById(requestId)
+                    .orElseThrow(() -> new NotFoundException("Request not found"));
+            item.setRequest(request);
+        }
         // существует ли пользователь userId
         User found = findUserById(userId);
         item.setOwner(found);

@@ -1,21 +1,38 @@
-create table users
+drop table if exists comments cascade;
+drop table if exists bookings cascade;
+drop table if exists items cascade;
+drop table if exists users cascade;
+drop table if exists requests cascade;
+
+create table if not exists users
 (
     id    serial8 primary key,
     name  varchar not null,
     email varchar not null unique
 );
 
-create table items
+create table if not exists requests
+(
+    id          serial8 primary key,
+    description varchar                  not null,
+    created     timestamp without time zone not null,
+    owner_id    int8                     not null,
+    foreign key (owner_id) references users (id)
+);
+
+create table if not exists items
 (
     id           serial8 primary key,
     name         varchar not null,
     description  varchar not null,
     is_available boolean not null,
     owner_id     int8    not null,
-    foreign key (owner_id) references users (id)
+    request_id   int8,
+    foreign key (owner_id) references users (id),
+    foreign key (request_id) references requests (id)
 );
 
-create table bookings
+create table if not exists bookings
 (
     id         serial8 primary key,
     start_date timestamp without time zone not null,
@@ -27,7 +44,7 @@ create table bookings
     foreign key (booker_id) references users (id)
 );
 
-create table comments
+create table if not exists comments
 (
     id        serial8 primary key,
     text      varchar                     not null,
@@ -37,3 +54,4 @@ create table comments
     foreign key (item_id) references items (id),
     foreign key (author_id) references users (id)
 );
+
