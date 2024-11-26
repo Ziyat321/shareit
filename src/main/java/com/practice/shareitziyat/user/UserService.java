@@ -5,11 +5,11 @@ import java.util.List;
 public interface UserService {
     User create(User user);
 
-    User update(User updatedUser, int userId);
+    User update(User updatedUser, Long userId);
 
-    User findById(int userId);
+    User findById(Long userId);
 
     List<User> findAll();
 
-    void deleteById(int userId);
+    void deleteById(Long userId);
 }

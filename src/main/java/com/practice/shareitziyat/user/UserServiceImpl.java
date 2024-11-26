@@ -1,11 +1,13 @@
 package com.practice.shareitziyat.user;
 
+import com.practice.shareitziyat.exceptions.NotFoundException;
 import com.practice.shareitziyat.exceptions.UserAlreadyExistsException;
 import com.practice.shareitziyat.user.dto.UserMapper;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -17,22 +19,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public User create(User user) {
         checkEmail(user);
-        return userRepository.create(user);
+        userRepository.save(user);
+        return user;
     }
 
     @Override
-    public User update(User updatedUser, int userId) {
+    public User update(User updatedUser, Long userId) {
         updatedUser.setId(userId);
         checkEmail(updatedUser);
 
-        User existingUser = userRepository.findById(userId);
+        User existingUser =  findById(userId);
         userMapper.merge(existingUser, updatedUser);
+        userRepository.save(existingUser);
         return existingUser;
     }
 
     @Override
-    public User findById(int userId) {
-        return userRepository.findById(userId);
+    public User findById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(()-> new NotFoundException("User not found"));
     }
 
     @Override
@@ -41,7 +46,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteById(int userId) {
+    public void deleteById(Long userId) {
+
         userRepository.deleteById(userId);
     }
 
@@ -52,7 +58,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User found = optionalUser.get();
-        if (found.getId() != user.getId()) {
+        if (!Objects.equals(found.getId(), user.getId())) {
             throw new UserAlreadyExistsException("Пользователь с email:" + user.getEmail() + "уже существует");
         }
     }
