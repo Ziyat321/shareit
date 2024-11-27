@@ -5,6 +5,7 @@ import com.practice.shareitziyat.item.Comment;
 import com.practice.shareitziyat.item.Item;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
