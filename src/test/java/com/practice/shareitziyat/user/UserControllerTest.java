@@ -127,4 +127,9 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("User1"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("email1@email.com"));
     }
+    
+    @Test
+    @SneakyThrows
+    void deleteTest() {
+    }
 }

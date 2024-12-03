@@ -6,14 +6,14 @@ drop table if exists requests cascade;
 
 create table if not exists users
 (
-    id    serial8 primary key,
+    id    bigserial primary key,
     name  varchar not null,
     email varchar not null unique
 );
 
 create table if not exists requests
 (
-    id          serial8 primary key,
+    id          bigserial primary key,
     description varchar                  not null,
     created     timestamp without time zone not null,
     owner_id    int8                     not null,
@@ -22,7 +22,7 @@ create table if not exists requests
 
 create table if not exists items
 (
-    id           serial8 primary key,
+    id           bigserial primary key,
     name         varchar not null,
     description  varchar not null,
     is_available boolean not null,
@@ -34,7 +34,7 @@ create table if not exists items
 
 create table if not exists bookings
 (
-    id         serial8 primary key,
+    id         bigserial primary key,
     start_date timestamp without time zone not null,
     end_date   timestamp without time zone not null,
     item_id    int8                        not null,
@@ -46,7 +46,7 @@ create table if not exists bookings
 
 create table if not exists comments
 (
-    id        serial8 primary key,
+    id        bigserial primary key,
     text      varchar                     not null,
     created   timestamp without time zone not null,
     item_id   int8                        not null,

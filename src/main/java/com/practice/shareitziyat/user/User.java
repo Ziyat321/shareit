@@ -4,10 +4,7 @@ import com.practice.shareitziyat.booking.Booking;
 import com.practice.shareitziyat.item.Comment;
 import com.practice.shareitziyat.item.Item;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
@@ -18,9 +15,11 @@ import java.util.List;
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "users")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     Long id;
 
     String name;
@@ -35,4 +34,6 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     List<Comment> comments;
+
+
 }

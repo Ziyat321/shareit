@@ -3,8 +3,10 @@ package com.practice.shareitziyat.user;
 import com.practice.shareitziyat.exceptions.NotFoundException;
 import com.practice.shareitziyat.exceptions.UserAlreadyExistsException;
 import com.practice.shareitziyat.user.dto.UserMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -23,10 +25,15 @@ public class UserServiceTest {
     @Spy
     UserMapper userMapper;
 
+    UserService userService;
+
+    @BeforeEach
+    void setUp() {
+        userService = new UserServiceImpl(userRepository, userMapper);
+    }
+
     @Test
     void findByIdTest() {
-        UserService userService = new UserServiceImpl(userRepository, userMapper);
-
         Mockito.when(userRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.empty());
 
@@ -38,7 +45,6 @@ public class UserServiceTest {
 
     @Test
     void findByIdTest2() {
-        UserService userService = new UserServiceImpl(userRepository, userMapper);
         User user = new User();
         user.setId(1L);
         user.setEmail("user@mail.com");
@@ -55,7 +61,6 @@ public class UserServiceTest {
 
     @Test
     void createExceptionTest() {
-        UserService userService = new UserServiceImpl(userRepository, userMapper);
         User user = new User();
         user.setId(1L);
         user.setEmail("user@mail.com");
@@ -78,7 +83,6 @@ public class UserServiceTest {
 
     @Test
     void createTest() {
-        UserService userService = new UserServiceImpl(userRepository, userMapper);
         User user = new User();
         user.setId(1L);
         user.setEmail("user@mail.com");
@@ -97,7 +101,6 @@ public class UserServiceTest {
 
     @Test
     void updateTest() {
-        UserService userService = new UserServiceImpl(userRepository, userMapper);
         User user = new User();
         user.setEmail("user@mail.com");
         user.setName("user");
@@ -124,7 +127,6 @@ public class UserServiceTest {
 
     @Test
     void findAllTest() {
-        UserService userService = new UserServiceImpl(userRepository, userMapper);
         User user1 = new User();
         user1.setId(1L);
         user1.setName("User1");

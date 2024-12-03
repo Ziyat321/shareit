@@ -3,15 +3,15 @@ package com.practice.shareitziyat.user;
 import com.practice.shareitziyat.exceptions.NotFoundException;
 import com.practice.shareitziyat.exceptions.UserAlreadyExistsException;
 import com.practice.shareitziyat.user.dto.UserMapper;
-import lombok.Data;
-import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@Component
-@Data
+@Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
