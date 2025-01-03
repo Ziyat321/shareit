@@ -30,9 +30,8 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
 
     @Override
-
-    public Item create(Item item, Long userId) {
-        Long requestId = item.getRequest().getId();
+    public Item create(Item item, Long userId, Long requestId) {
+//        Long requestId = item.getRequest().getId();
         if(requestId != null) {
             Request request = requestRepository.findById(requestId)
                     .orElseThrow(() -> new NotFoundException("Request not found"));

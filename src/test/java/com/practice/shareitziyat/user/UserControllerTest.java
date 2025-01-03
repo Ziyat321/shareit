@@ -65,6 +65,7 @@ public class UserControllerTest {
 
         Mockito.when(userService.findAll()).thenReturn(List.of(user1, user2));
 
+        mockMvc.perform(MockMvcRequestBuilders.delete("/users/3"));
         mockMvc.perform(MockMvcRequestBuilders.get("/users"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(2)))

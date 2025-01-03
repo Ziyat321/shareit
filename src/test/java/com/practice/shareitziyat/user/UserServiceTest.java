@@ -96,6 +96,25 @@ public class UserServiceTest {
     }
 
     @Test
+    void createTest2() {
+        UserService userService = new UserServiceImpl(userRepository, userMapper);
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("user@mail.com");
+        user.setName("user");
+
+        Mockito.when(userRepository.findByEmail(Mockito.anyString()))
+                .thenReturn(Optional.empty());
+        Mockito.when(userRepository.save(Mockito.any(User.class)))
+                .thenReturn(user);
+
+        User created = userService.create(user);
+        assertEquals(user.getId(), created.getId());
+        assertEquals(user.getName(), created.getName());
+        assertEquals(user.getEmail(), created.getEmail());
+    }
+
+    @Test
     void updateTest() {
         UserService userService = new UserServiceImpl(userRepository, userMapper);
         User user = new User();
@@ -138,6 +157,7 @@ public class UserServiceTest {
                 .thenReturn(List.of(user1, user2));
 
         List<User> users = userService.findAll();
+        userService.deleteById(3L);
         assertEquals(2, users.size());
         assertEquals(user1.getId(), users.get(0).getId());
         assertEquals(user2.getId(), users.get(1).getId());

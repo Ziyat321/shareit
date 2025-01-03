@@ -3,7 +3,7 @@ package com.practice.shareitziyat.item;
 import java.util.List;
 
 public interface ItemService {
-    Item create(Item item, Long userId);
+    Item create(Item item, Long userId, Long requestId);
 
     Item update(Item updatedItem, Long itemId, Long userId);
 

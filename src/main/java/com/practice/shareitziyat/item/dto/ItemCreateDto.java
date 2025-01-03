@@ -16,6 +16,4 @@ public class ItemCreateDto {
     String description;
     @NotNull
     Boolean available;
-    Long requestId;
-
 }

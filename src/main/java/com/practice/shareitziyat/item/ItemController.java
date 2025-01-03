@@ -14,13 +14,13 @@ import java.util.List;
 public class ItemController {
     private final ItemService itemService;
     private final ItemMapper itemMapper;
-    private final CommentMapper commentMapper;
 
     @PostMapping
     public ItemResponseDto create(@Valid @RequestBody ItemCreateDto itemCreate,
-                                  @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
+                                  @RequestHeader(RequestConstants.USER_HEADER) Long userId,
+                                  @RequestParam(required = false) Long requestId) {
         return itemMapper.toResponse(
-                itemService.create(itemMapper.fromCreate(itemCreate), userId));
+                itemService.create(itemMapper.fromCreate(itemCreate), userId, requestId));
     }
 
     @PatchMapping("/{itemId}")
@@ -56,19 +56,19 @@ public class ItemController {
     public CommentResponseDto createComment(@PathVariable Long itemId,
                                             @Valid @RequestBody CommentCreateDto commentCreate,
                                             @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
-        return commentMapper.toResponse(
-                itemService.createComment(commentMapper.fromCreate(commentCreate), itemId, userId)
+        return itemMapper.toResponseComment(
+                itemService.createComment(itemMapper.fromCreateComment(commentCreate), itemId, userId)
         );
     }
 
     @GetMapping("/comments/{userId}")
     public List<CommentResponseDto> findCommentsByUser(@PathVariable Long userId) {
-        return commentMapper.toResponse(itemService.findCommentsByUser(userId));
+        return itemMapper.toResponseComment(itemService.findCommentsByUser(userId));
     }
 
     @GetMapping("/comments/{itemId}")
     public List<CommentResponseDto> findCommentsByItem(@PathVariable Long itemId) {
-        return commentMapper.toResponse(itemService.findCommentsByItem(itemId));
+        return itemMapper.toResponseComment(itemService.findCommentsByItem(itemId));
     }
 }
 
