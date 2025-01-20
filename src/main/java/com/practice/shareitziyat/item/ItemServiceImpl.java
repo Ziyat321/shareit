@@ -46,9 +46,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item update(Item updatedItem, Long itemId, Long userId) {
         // существует ли пользователь userId
-        User found = findUserById(userId);
+        findUserById(userId);
         Item existingItem = findById(itemId);
-        if (existingItem.getOwner().getId() != userId) {
+        if (!existingItem.getOwner().getId().equals(userId)) {
             throw new ForbiddenException("Wrong owner");
         }
         // проверить, является ли данный пользователь автором предмета (статус 403)
