@@ -220,14 +220,10 @@ public class ItemServiceTest {
 
         Mockito.when(itemRepository.search(Mockito.anyString()))
                 .thenAnswer(invocationOnMock -> {
-                    String keyword = invocationOnMock.getArgument(0);
-                    List<Item> itemsFound = new ArrayList<>();
-                    for (Item item : itemList) {
-                        if (item.getName().contains(keyword) || item.getDescription().contains(keyword)) {
-                            itemsFound.add(item);
-                        }
-                    }
-                    return itemsFound;
+                    String keyWord = invocationOnMock.getArgument(0);
+                    return itemList.stream()
+                            .filter(item -> item.getName().toLowerCase().contains(keyWord.toLowerCase())
+                                    || item.getDescription().toLowerCase().contains(keyWord.toLowerCase())).toList();
                 });
 
         List<Item> items = itemService.search("desc");
@@ -292,14 +288,9 @@ public class ItemServiceTest {
                 });
         Mockito.when(itemRepository.findAllByOwner_Id(Mockito.anyLong()))
                 .thenAnswer(invocationOnMock -> {
-                    long owmerId = invocationOnMock.getArgument(0);
-                    List<Item> itemsFound = new ArrayList<>();
-                    for (Item item : itemList) {
-                        if (item.getOwner().getId() == owmerId) {
-                            itemsFound.add(item);
-                        }
-                    }
-                    return itemsFound;
+                    long ownerId = invocationOnMock.getArgument(0);
+                    return itemList.stream()
+                            .filter(item -> item.getOwner().getId() == ownerId).toList();
                 });
 
         List<Item> items = itemService.findAll(1L);
@@ -361,7 +352,7 @@ public class ItemServiceTest {
         );
         Mockito.when(commentRepository.save(Mockito.any(Comment.class))).
                 thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0)
-        );
+                );
 
         Comment commentSaved = itemService.createComment(comment, 1L, 1L);
 
@@ -421,24 +412,19 @@ public class ItemServiceTest {
         List<Comment> commentList = List.of(comment1, comment2, comment3);
 
         Mockito.when(userRepository.findById(Mockito.anyLong()))
-                        .thenAnswer(invocationOnMock -> {
-                            long userId = invocationOnMock.getArgument(0);
-                            User user = new User();
-                            user.setId(userId);
-                            user.setName("user1");
-                            user.setEmail("user1@mail.com");
-                            return Optional.of(user);
-                        });
+                .thenAnswer(invocationOnMock -> {
+                    long userId = invocationOnMock.getArgument(0);
+                    User user = new User();
+                    user.setId(userId);
+                    user.setName("user1");
+                    user.setEmail("user1@mail.com");
+                    return Optional.of(user);
+                });
         Mockito.when(commentRepository.findAllByUser_Id(Mockito.anyLong()))
                 .thenAnswer(invocationOnMock -> {
                     long userId = invocationOnMock.getArgument(0);
-                    List<Comment> commentsFound = new ArrayList<>();
-                    for (Comment comment : commentList) {
-                        if (comment.getUser().getId() == userId) {
-                            commentsFound.add(comment);
-                        }
-                    }
-                    return commentsFound;
+                    return commentList.stream()
+                            .filter(comment -> comment.getUser().getId() == userId).toList();
                 });
 
         List<Comment> comments = itemService.findCommentsByUser(1L);
@@ -530,13 +516,8 @@ public class ItemServiceTest {
         Mockito.when(commentRepository.findAllByItem_Id(Mockito.anyLong()))
                 .thenAnswer(invocationOnMock -> {
                     long itemId = invocationOnMock.getArgument(0);
-                    List<Comment> commentsFound = new ArrayList<>();
-                    for (Comment comment : commentList) {
-                        if (comment.getItem().getId() == itemId) {
-                            commentsFound.add(comment);
-                        }
-                    }
-                    return commentsFound;
+                    return commentList.stream()
+                            .filter(comment -> comment.getItem().getId() == itemId).toList();
                 });
 
         List<Comment> comments = itemService.findCommentsByItem(1L);

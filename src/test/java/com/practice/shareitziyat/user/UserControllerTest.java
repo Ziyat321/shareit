@@ -3,7 +3,6 @@ package com.practice.shareitziyat.user;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.practice.shareitziyat.user.dto.UserCreateDto;
 import com.practice.shareitziyat.user.dto.UserMapper;
-import com.practice.shareitziyat.user.dto.UserResponseDto;
 import com.practice.shareitziyat.user.dto.UserUpdateDto;
 import lombok.SneakyThrows;
 import org.hamcrest.Matchers;
