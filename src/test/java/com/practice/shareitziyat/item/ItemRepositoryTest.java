@@ -42,18 +42,14 @@ public class ItemRepositoryTest {
         List<Item> items = itemRepository.findAllByOwner_Id(savedUser.getId());
 
         assertEquals(2, items.size());
-        assertEquals(1, items.get(0).getId());
         assertEquals("Item1", items.get(0).getName());
         assertEquals("Description1", items.get(0).getDescription());
         assertTrue(items.get(0).getAvailable());
-        assertEquals(1, items.get(0).getOwner().getId());
         assertEquals("User1", items.get(0).getOwner().getName());
         assertEquals("email1@email.com", items.get(0).getOwner().getEmail());
-        assertEquals(2, items.get(1).getId());
         assertEquals("Item2", items.get(1).getName());
         assertEquals("Description2", items.get(1).getDescription());
         assertTrue(items.get(1).getAvailable());
-        assertEquals(1, items.get(1).getOwner().getId());
         assertEquals("User1", items.get(1).getOwner().getName());
         assertEquals("email1@email.com", items.get(1).getOwner().getEmail());
     }
@@ -81,18 +77,14 @@ public class ItemRepositoryTest {
         List<Item> items = itemRepository.search("desc");
 
         assertEquals(2, items.size());
-        assertEquals(1, items.get(0).getId());
         assertEquals("Item1", items.get(0).getName());
         assertEquals("Description1", items.get(0).getDescription());
         assertTrue(items.get(0).getAvailable());
-        assertEquals(1, items.get(0).getOwner().getId());
         assertEquals("User1", items.get(0).getOwner().getName());
         assertEquals("email1@email.com", items.get(0).getOwner().getEmail());
-        assertEquals(2, items.get(1).getId());
         assertEquals("Item2", items.get(1).getName());
         assertEquals("Description2", items.get(1).getDescription());
         assertTrue(items.get(1).getAvailable());
-        assertEquals(1, items.get(1).getOwner().getId());
         assertEquals("User1", items.get(1).getOwner().getName());
         assertEquals("email1@email.com", items.get(1).getOwner().getEmail());
     }

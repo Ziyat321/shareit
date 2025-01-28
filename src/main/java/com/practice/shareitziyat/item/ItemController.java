@@ -61,12 +61,12 @@ public class ItemController {
         );
     }
 
-    @GetMapping("/comments/{userId}")
+    @GetMapping("/comments/users/{userId}")
     public List<CommentResponseDto> findCommentsByUser(@PathVariable Long userId) {
         return itemMapper.toResponseComment(itemService.findCommentsByUser(userId));
     }
 
-    @GetMapping("/comments/{itemId}")
+    @GetMapping("/comments/items/{itemId}")
     public List<CommentResponseDto> findCommentsByItem(@PathVariable Long itemId) {
         return itemMapper.toResponseComment(itemService.findCommentsByItem(itemId));
     }

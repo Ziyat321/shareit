@@ -246,8 +246,133 @@ public class ItemControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.text").value("comment"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.authorName").value("user"));
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.created").value(
-//                        LocalDateTime.of(2025, 1,24, 12, 10, 30)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.authorName").value("user"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.created").value("2025-01-24T12:10:30"));
+    }
+
+    @Test
+    @SneakyThrows
+    void findCommentsByUserTest() {
+        User user1 = new User();
+        user1.setId(1L);
+        user1.setName("user1");
+        user1.setEmail("user1@mail.com");
+        User user2 = new User();
+        user2.setId(2L);
+        user2.setName("user2");
+        user2.setEmail("user2@mail.com");
+        Item item1 = new Item();
+        item1.setId(1L);
+        item1.setName("item1");
+        item1.setDescription("description1");
+        item1.setAvailable(true);
+        Item item2 = new Item();
+        item2.setId(2L);
+        item2.setName("item2");
+        item2.setDescription("description2");
+        item2.setAvailable(true);
+
+        Comment comment1 = new Comment();
+        comment1.setId(1L);
+        comment1.setText("comment1");
+        comment1.setCreated(LocalDateTime.of(2025, 1, 24, 12, 10,30));
+        comment1.setItem(item1);
+        comment1.setUser(user1);
+        Comment comment2 = new Comment();
+        comment2.setId(2L);
+        comment2.setText("comment2");
+        comment2.setCreated(LocalDateTime.of(2025, 1, 24, 12, 10,30));
+        comment2.setItem(item1);
+        comment2.setUser(user2);
+        Comment comment3 = new Comment();
+        comment3.setId(3L);
+        comment3.setText("comment3");
+        comment3.setCreated(LocalDateTime.of(2025, 1, 24, 12, 10,30));
+        comment3.setItem(item2);
+        comment3.setUser(user1);
+        List<Comment> commentList = List.of(comment1, comment2, comment3);
+
+        Mockito.when(itemService.findCommentsByUser(Mockito.anyLong()))
+                .thenAnswer(invocationOnMock -> {
+                   long userId = invocationOnMock.getArgument(0);
+                   return commentList.stream()
+                           .filter(comment -> comment.getUser().getId() == userId)
+                           .toList();
+                });
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/items/comments/users/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$",Matchers.hasSize(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].text").value("comment1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].authorName").value("user1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].created").value("2025-01-24T12:10:30"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value(3))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].text").value("comment3"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].authorName").value("user1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].created").value("2025-01-24T12:10:30"));
+    }
+
+    @Test
+    @SneakyThrows
+    void findCommentsByItemTest() {
+        User user1 = new User();
+        user1.setId(1L);
+        user1.setName("user1");
+        user1.setEmail("user1@mail.com");
+        User user2 = new User();
+        user2.setId(2L);
+        user2.setName("user2");
+        user2.setEmail("user2@mail.com");
+        Item item1 = new Item();
+        item1.setId(1L);
+        item1.setName("item1");
+        item1.setDescription("description1");
+        item1.setAvailable(true);
+        Item item2 = new Item();
+        item2.setId(2L);
+        item2.setName("item2");
+        item2.setDescription("description2");
+        item2.setAvailable(true);
+
+        Comment comment1 = new Comment();
+        comment1.setId(1L);
+        comment1.setText("comment1");
+        comment1.setCreated(LocalDateTime.of(2025, 1, 24, 12, 10,30));
+        comment1.setItem(item1);
+        comment1.setUser(user1);
+        Comment comment2 = new Comment();
+        comment2.setId(2L);
+        comment2.setText("comment2");
+        comment2.setCreated(LocalDateTime.of(2025, 1, 24, 12, 10,30));
+        comment2.setItem(item1);
+        comment2.setUser(user2);
+        Comment comment3 = new Comment();
+        comment3.setId(3L);
+        comment3.setText("comment3");
+        comment3.setCreated(LocalDateTime.of(2025, 1, 24, 12, 10,30));
+        comment3.setItem(item2);
+        comment3.setUser(user1);
+        List<Comment> commentList = List.of(comment1, comment2, comment3);
+
+        Mockito.when(itemService.findCommentsByItem(Mockito.anyLong()))
+                .thenAnswer(invocationOnMock -> {
+                   long itemId = invocationOnMock.getArgument(0);
+                   return commentList.stream()
+                           .filter(comment -> comment.getItem().getId() == itemId)
+                           .toList();
+                });
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/items/comments/items/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$",Matchers.hasSize(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].text").value("comment1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].authorName").value("user1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].created").value("2025-01-24T12:10:30"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].text").value("comment2"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].authorName").value("user2"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].created").value("2025-01-24T12:10:30"));
     }
 }

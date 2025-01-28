@@ -166,4 +166,19 @@ public class UserServiceTest {
         assertEquals(user1.getEmail(), users.get(0).getEmail());
         assertEquals(user2.getEmail(), users.get(1).getEmail());
     }
+
+    @Test
+    void mergeTest() {
+        User existingUser = new User();
+        existingUser.setId(1L);
+        existingUser.setName("User1");
+        existingUser.setEmail("email1@email.com");
+        User updatedUser = new User();
+
+        userMapper.merge(existingUser, updatedUser);
+
+        assertEquals(1, existingUser.getId());
+        assertEquals("User1", existingUser.getName());
+        assertEquals("email1@email.com", existingUser.getEmail());
+    }
 }
