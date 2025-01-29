@@ -3,6 +3,9 @@ package com.practice.shareitziyat.item;
 import com.practice.shareitziyat.booking.Booking;
 import com.practice.shareitziyat.booking.BookingRepository;
 import com.practice.shareitziyat.booking.BookingStatus;
+import com.practice.shareitziyat.exceptions.BadRequestException;
+import com.practice.shareitziyat.exceptions.ForbiddenException;
+import com.practice.shareitziyat.exceptions.NotFoundException;
 import com.practice.shareitziyat.item.dto.ItemMapper;
 import com.practice.shareitziyat.request.Request;
 import com.practice.shareitziyat.request.RequestRepository;
@@ -97,6 +100,57 @@ public class ItemServiceTest {
     }
 
     @Test
+    public void createExceptionTest() {
+        ItemService itemService = new ItemServiceImpl(itemRepository, userRepository, commentRepository,
+                bookingRepository, requestRepository, itemMapper);
+        Item item = new Item();
+        item.setId(1L);
+        item.setName("item");
+        item.setDescription("description");
+        item.setAvailable(true);
+        Mockito.when(requestRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> itemService.create(item, 1L, 2L));
+
+        assertEquals("Request not found", exception.getMessage());
+    }
+
+    @Test
+    public void createTest1 () {
+        ItemService itemService = new ItemServiceImpl(itemRepository, userRepository, commentRepository,
+                bookingRepository, requestRepository, itemMapper);
+        Item item = new Item();
+        item.setId(1L);
+        item.setName("item");
+        item.setDescription("description");
+        item.setAvailable(true);
+
+        Mockito.when(userRepository.findById(Mockito.anyLong()))
+                .thenAnswer(invocationOnMock -> {
+                    long userId = invocationOnMock.getArgument(0);
+                    User user = new User();
+                    user.setId(userId);
+                    user.setEmail("user@mail.com");
+                    user.setName("user_posting_for_request");
+                    return Optional.of(user);
+                });
+        Mockito.when(itemRepository.save(Mockito.any(Item.class)))
+                .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+
+        Item createdItem = itemService.create(item, 1L, null);
+
+        assertEquals(1, createdItem.getId());
+        assertEquals("item", createdItem.getName());
+        assertEquals("description", createdItem.getDescription());
+        assertEquals(true, createdItem.getAvailable());
+        assertEquals(1, createdItem.getOwner().getId());
+        assertEquals("user_posting_for_request", createdItem.getOwner().getName());
+        assertEquals("user@mail.com", createdItem.getOwner().getEmail());
+        assertNull(createdItem.getRequest());
+    }
+
+    @Test
     public void updateTest() {
         ItemService itemService = new ItemServiceImpl(itemRepository, userRepository, commentRepository,
                 bookingRepository, requestRepository, itemMapper);
@@ -151,6 +205,77 @@ public class ItemServiceTest {
     }
 
     @Test
+    public void updateExceptionTest() {
+        ItemService itemService = new ItemServiceImpl(itemRepository, userRepository, commentRepository,
+                bookingRepository, requestRepository, itemMapper);
+        Item item1 = new Item();
+        item1.setId(1L);
+        item1.setName("item1");
+        item1.setDescription("description1");
+        item1.setAvailable(true);
+        User owner = new User();
+        owner.setId(1L);
+        owner.setName("item_owner1");
+        owner.setEmail("item_owner1@mail.com");
+        item1.setOwner(owner);
+
+        Mockito.when(userRepository.findById(Mockito.anyLong()))
+                .thenAnswer(invocationOnMock -> {
+                            long userId = invocationOnMock.getArgument(0);
+                            User user = new User();
+                            user.setId(userId);
+                            user.setName("item_owner2");
+                            user.setEmail("item_owner2@mail.com");
+                            return Optional.of(user);
+                        }
+                );
+        Mockito.when(itemRepository.findById(Mockito.anyLong()))
+                .thenAnswer(invocationOnMock -> {
+                    long itemId = invocationOnMock.getArgument(0);
+                    Item item2 = new Item();
+                    item2.setId(itemId);
+                    item2.setName("item2");
+                    item2.setDescription("description2");
+                    item2.setAvailable(true);
+                    User user = new User();
+                    user.setId(3L);
+                    user.setName("item_owner3");
+                    user.setEmail("item_owner3@mail.com");
+                    item2.setOwner(user);
+                    return Optional.of(item2);
+                });
+
+        ForbiddenException exception = assertThrows(ForbiddenException.class,
+                () -> itemService.update(item1, 2L, 2L));
+
+        assertEquals("Wrong owner", exception.getMessage());
+    }
+
+    @Test
+    public void updateTest1() {
+        ItemService itemService = new ItemServiceImpl(itemRepository, userRepository, commentRepository,
+                bookingRepository, requestRepository, itemMapper);
+        Item item1 = new Item();
+        item1.setId(1L);
+        item1.setName("item1");
+        item1.setDescription("description1");
+        item1.setAvailable(true);
+        User owner = new User();
+        owner.setId(1L);
+        owner.setName("item_owner1");
+        owner.setEmail("item_owner1@mail.com");
+        item1.setOwner(owner);
+
+        Mockito.when(userRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> itemService.update(item1, 2L, 2L));
+
+        assertEquals("User not found", exception.getMessage());
+    }
+
+    @Test
     public void findByIdTest() {
         ItemService itemService = new ItemServiceImpl(itemRepository, userRepository, commentRepository,
                 bookingRepository, requestRepository, itemMapper);
@@ -180,6 +305,20 @@ public class ItemServiceTest {
         assertEquals(1, item.getOwner().getId());
         assertEquals("item_owner1", item.getOwner().getName());
         assertEquals("item_owner1@mail.com", item.getOwner().getEmail());
+    }
+
+    @Test
+    public void findByIdExceptionTest() {
+        ItemService itemService = new ItemServiceImpl(itemRepository, userRepository, commentRepository,
+                bookingRepository, requestRepository, itemMapper);
+
+        Mockito.when(itemRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> itemService.findById(1L));
+
+        assertEquals("User not found", exception.getMessage());
     }
 
     @Test
@@ -246,6 +385,16 @@ public class ItemServiceTest {
     }
 
     @Test
+    public void searchEmptyTest() {
+        ItemService itemService = new ItemServiceImpl(itemRepository, userRepository, commentRepository,
+                bookingRepository, requestRepository, itemMapper);
+
+        List<Item> items = itemService.search("");
+
+        assertEquals(0, items.size());
+    }
+
+    @Test
     public void findAllTest() {
         ItemService itemService = new ItemServiceImpl(itemRepository, userRepository, commentRepository,
                 bookingRepository, requestRepository, itemMapper);
@@ -293,6 +442,7 @@ public class ItemServiceTest {
                             .filter(item -> item.getOwner().getId() == ownerId).toList();
                 });
 
+        itemService.deleteById(4L);
         List<Item> items = itemService.findAll(1L);
 
         assertEquals(2, items.size());
@@ -367,6 +517,24 @@ public class ItemServiceTest {
         assertEquals(1, commentSaved.getUser().getId());
         assertEquals("user1", commentSaved.getUser().getName());
         assertEquals("user1@mail.com", commentSaved.getUser().getEmail());
+    }
+
+    @Test
+    public void createCommentExceptionTest() {
+        ItemService itemService = new ItemServiceImpl(itemRepository, userRepository, commentRepository,
+                bookingRepository, requestRepository, itemMapper);
+        Comment comment = new Comment();
+        comment.setId(1L);
+        comment.setText("comment");
+
+        Mockito.when(bookingRepository.findByUser_IdAndItem_IdAndStatusIsAndStartDateBefore(
+                Mockito.anyLong(), Mockito.anyLong(), Mockito.any(BookingStatus.class), Mockito.any(LocalDateTime.class)
+        )).thenReturn(new ArrayList<>());
+
+        BadRequestException exception = assertThrows(BadRequestException.class,
+                () -> itemService.createComment(comment, 1L, 1L));
+
+        assertEquals("..", exception.getMessage());
     }
 
     @Test
