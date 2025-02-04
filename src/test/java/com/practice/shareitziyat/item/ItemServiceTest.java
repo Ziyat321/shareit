@@ -6,7 +6,9 @@ import com.practice.shareitziyat.booking.BookingStatus;
 import com.practice.shareitziyat.exceptions.BadRequestException;
 import com.practice.shareitziyat.exceptions.ForbiddenException;
 import com.practice.shareitziyat.exceptions.NotFoundException;
+import com.practice.shareitziyat.item.dto.CommentResponseDto;
 import com.practice.shareitziyat.item.dto.ItemMapper;
+import com.practice.shareitziyat.item.dto.ItemResponseDto;
 import com.practice.shareitziyat.request.Request;
 import com.practice.shareitziyat.request.RequestRepository;
 import com.practice.shareitziyat.user.User;
@@ -18,7 +20,6 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,7 +118,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    public void createTest1 () {
+    public void createTest1() {
         ItemService itemService = new ItemServiceImpl(itemRepository, userRepository, commentRepository,
                 bookingRepository, requestRepository, itemMapper);
         Item item = new Item();
@@ -716,5 +717,62 @@ public class ItemServiceTest {
         assertEquals(1, comments.get(1).getItem().getOwner().getId());
         assertEquals("user1", comments.get(1).getItem().getOwner().getName());
         assertEquals("user1@mail.com", comments.get(1).getItem().getOwner().getEmail());
+    }
+
+    @Test
+    public void responseDtoTest() {
+        Item item = new Item();
+        item.setId(1L);
+        item.setName("item");
+        item.setDescription("description");
+        item.setAvailable(true);
+        Comment comment = new Comment();
+        comment.setId(1L);
+        comment.setText("text");
+        comment.setCreated(LocalDateTime.of(2025, 1, 2, 12, 0, 0));
+        comment.setItem(item);
+        User commentWriter = new User();
+        commentWriter.setId(1L);
+        commentWriter.setName("user");
+        commentWriter.setEmail("user@mail.com");
+        comment.setUser(commentWriter);
+        item.setComments(List.of(comment));
+        Request request = new Request();
+        request.setId(1L);
+        request.setDescription("request description");
+        request.setCreated(LocalDateTime.of(2025, 2, 4, 12, 0, 0));
+        request.setOwner(commentWriter);
+        item.setRequest(request);
+
+        ItemResponseDto itemResponse = itemMapper.toResponse(item);
+        List<CommentResponseDto> commentResponse = itemResponse.getComments();
+
+        assertEquals(1, itemResponse.getId());
+        assertEquals("item", itemResponse.getName());
+        assertEquals("description", itemResponse.getDescription());
+        assertEquals(true, itemResponse.getAvailable());
+        assertEquals(1, commentResponse.get(0).getId());
+        assertEquals("text", commentResponse.get(0).getText());
+        assertEquals("user", commentResponse.get(0).getAuthorName());
+        assertEquals(LocalDateTime.of(2025, 1, 2, 12, 0, 0),
+                commentResponse.get(0).getCreated());
+        assertEquals(1, itemResponse.getRequestId());
+    }
+
+    @Test
+    public void mergeTest() {
+        Item existingItem = new Item();
+        existingItem.setId(1L);
+        existingItem.setName("item");
+        existingItem.setDescription("description");
+        existingItem.setAvailable(true);
+        Item updatedItem = new Item();
+
+        itemMapper.merge(existingItem, updatedItem);
+
+        assertEquals(1, existingItem.getId());
+        assertEquals("item", existingItem.getName());
+        assertEquals("description", existingItem.getDescription());
+        assertEquals(true, existingItem.getAvailable());
     }
 }

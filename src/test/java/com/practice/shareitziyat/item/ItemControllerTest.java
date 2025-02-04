@@ -134,6 +134,7 @@ public class ItemControllerTest {
         Mockito.when(itemService.findAll(Mockito.any()))
                 .thenReturn(List.of(item1, item2));
 
+        mockMvc.perform(MockMvcRequestBuilders.delete("/items/3"));
         mockMvc.perform(MockMvcRequestBuilders.get("/items")
                         .header(RequestConstants.USER_HEADER, owner.getId()))
                 .andExpect(MockMvcResultMatchers.status().isOk())

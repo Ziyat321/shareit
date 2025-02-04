@@ -1,6 +1,7 @@
 package com.practice.shareitziyat.request;
 
 import com.practice.shareitziyat.exceptions.NotFoundException;
+import com.practice.shareitziyat.request.dto.RequestMapper;
 import com.practice.shareitziyat.user.User;
 import com.practice.shareitziyat.user.UserRepository;
 import lombok.Data;
@@ -14,10 +15,10 @@ import java.util.List;
 
 @Service
 @Data
-@RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService{
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
+    private final RequestMapper requestMapper;
 
     @Override
     public Request create(Request request, Long userId) {
