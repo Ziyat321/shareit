@@ -1,7 +1,10 @@
 package com.practice.shareitziyat.request;
 
+import com.practice.shareitziyat.exceptions.NotFoundException;
+import com.practice.shareitziyat.item.Item;
 import com.practice.shareitziyat.item.dto.ItemMapper;
 import com.practice.shareitziyat.request.dto.RequestMapper;
+import com.practice.shareitziyat.request.dto.RequestResponseDto;
 import com.practice.shareitziyat.user.User;
 import com.practice.shareitziyat.user.UserRepository;
 import com.practice.shareitziyat.user.dto.UserMapper;
@@ -67,6 +70,23 @@ public class RequestServiceTest {
         assertEquals(1, createdRequest.getOwner().getId());
         assertEquals("user", createdRequest.getOwner().getName());
         assertEquals("user@mail.com", createdRequest.getOwner().getEmail());
+    }
+
+    @Test
+    public void createTest1() {
+        RequestService requestService = new RequestServiceImpl(requestRepository, userRepository, requestMapper);
+        Request request = new Request();
+        request.setId(1L);
+        request.setDescription("description");
+        request.setCreated(LocalDateTime.of(2025, 2, 4, 12, 0, 0));
+
+        Mockito.when(userRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> requestService.create(request, 1L));
+
+        assertEquals("User not found", exception.getMessage());
     }
 
     @Test
@@ -189,5 +209,96 @@ public class RequestServiceTest {
         assertEquals(1, requestFound.getOwner().getId());
         assertEquals("user", requestFound.getOwner().getName());
         assertEquals("user@mail.com", requestFound.getOwner().getEmail());
+    }
+
+    @Test
+    public void findByIdExceptionTest() {
+        RequestService requestService = new RequestServiceImpl(requestRepository, userRepository, requestMapper);
+
+        Mockito.when(requestRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> requestService.findById(1L));
+
+        assertEquals("Request not found", exception.getMessage());
+    }
+
+    @Test
+    public void toResponseTest() {
+        itemMapper = new ItemMapper();
+        userMapper = new UserMapper();
+        requestMapper = new RequestMapper(itemMapper, userMapper);
+        Request request = new Request();
+        request.setId(1L);
+        request.setDescription("description");
+        request.setCreated(LocalDateTime.of(2025, 2, 9, 12, 0, 0));
+        User owner = new User();
+        owner.setId(1L);
+        owner.setName("user");
+        owner.setEmail("user@email.com");
+        request.setOwner(owner);
+        Item item = new Item();
+        item.setId(1L);
+        item.setName("name");
+        item.setDescription("text");
+        item.setAvailable(true);
+        List<Item> items = List.of(item);
+        request.setItems(items);
+
+        RequestResponseDto requestResponse = requestMapper.toResponse(request);
+
+        assertEquals(1, requestResponse.getId());
+        assertEquals("description", requestResponse.getDescription());
+        assertEquals(LocalDateTime.of(2025, 2, 9, 12, 0, 0),
+                requestResponse.getCreated());
+        assertEquals(1, requestResponse.getOwner().getId());
+        assertEquals("user", requestResponse.getOwner().getName());
+        assertEquals("user@email.com", requestResponse.getOwner().getEmail());
+        assertEquals(1, requestResponse.getItems().get(0).getId());
+        assertEquals("name", requestResponse.getItems().get(0).getName());
+        assertEquals("text", requestResponse.getItems().get(0).getDescription());
+        assertEquals(true, requestResponse.getItems().get(0).getAvailable());
+    }
+
+    @Test
+    public void toResponseTest1() {
+        itemMapper = new ItemMapper();
+        userMapper = new UserMapper();
+        requestMapper = new RequestMapper(itemMapper, userMapper);
+        User owner = new User();
+        owner.setId(1L);
+        owner.setName("user");
+        owner.setEmail("user@email.com");
+        Request request1 = new Request();
+        request1.setId(1L);
+        request1.setDescription("description1");
+        request1.setCreated(LocalDateTime.of(2025, 2, 9, 12, 0, 0));
+        request1.setOwner(owner);
+        Request request2 = new Request();
+        request2.setId(2L);
+        request2.setDescription("description2");
+        request2.setCreated(LocalDateTime.of(2025, 2, 8, 12, 0, 0));
+        request2.setOwner(owner);
+        List<Request> requestList = List.of(request1, request2);
+        Page<Request> requests = new PageImpl<>(requestList);
+
+        Page<RequestResponseDto> requestResponse = requestMapper.toResponse(requests);
+        List<RequestResponseDto> requestResponseList = requestResponse.stream().toList();
+
+        assertEquals(2, requestResponseList.size());
+        assertEquals(1, requestResponseList.get(0).getId());
+        assertEquals("description1", requestResponseList.get(0).getDescription());
+        assertEquals(LocalDateTime.of(2025, 2, 9, 12, 0, 0),
+                requestResponseList.get(0).getCreated());
+        assertEquals(1, requestResponseList.get(0).getOwner().getId());
+        assertEquals("user", requestResponseList.get(0).getOwner().getName());
+        assertEquals("user@email.com", requestResponseList.get(0).getOwner().getEmail());
+        assertEquals(2, requestResponseList.get(1).getId());
+        assertEquals("description2", requestResponseList.get(1).getDescription());
+        assertEquals(LocalDateTime.of(2025, 2, 8, 12, 0, 0),
+                requestResponseList.get(1).getCreated());
+        assertEquals(1, requestResponseList.get(1).getOwner().getId());
+        assertEquals("user", requestResponseList.get(1).getOwner().getName());
+        assertEquals("user@email.com", requestResponseList.get(1).getOwner().getEmail());
     }
 }

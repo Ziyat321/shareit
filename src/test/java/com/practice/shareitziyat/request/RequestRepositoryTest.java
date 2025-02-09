@@ -40,10 +40,10 @@ public class RequestRepositoryTest {
         List<Request> requests = requestRepository.findAllByOwnerOrderByCreatedDesc(savedOwner);
 
         assertEquals(2, requests.size());
-        assertEquals("description2", requests.get(0).getDescription());
+        assertEquals("description1", requests.get(0).getDescription());
         assertEquals("user", requests.get(0).getOwner().getName());
         assertEquals("user@mail.com", requests.get(0).getOwner().getEmail());
-        assertEquals("description1", requests.get(1).getDescription());
+        assertEquals("description2", requests.get(1).getDescription());
         assertEquals("user", requests.get(1).getOwner().getName());
         assertEquals("user@mail.com", requests.get(1).getOwner().getEmail());
     }

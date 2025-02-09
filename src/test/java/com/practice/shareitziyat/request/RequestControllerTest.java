@@ -217,8 +217,7 @@ public class RequestControllerTest {
                    Optional<Request> requestOptional =  requests.stream()
                            .filter(request -> request.getId().equals(requestId))
                            .findFirst();
-                   if(requestOptional.isPresent()) return requestOptional.get();
-                   return null;
+                    return requestOptional.orElse(null);
                 });
 
         mockMvc.perform(MockMvcRequestBuilders.get("/requests/1"))
