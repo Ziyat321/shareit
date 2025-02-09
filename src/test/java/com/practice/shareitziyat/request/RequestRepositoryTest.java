@@ -22,7 +22,7 @@ public class RequestRepositoryTest {
     private RequestRepository requestRepository;
 
     @Test
-    public void findAllByOwnerOrderByCreatedDescTest() {
+    public void findAllByOwnerOrderByCreatedDescTest() throws InterruptedException {
         User owner = new User();
         owner.setName("user");
         owner.setEmail("user@mail.com");
@@ -32,6 +32,7 @@ public class RequestRepositoryTest {
         request1.setDescription("description1");
         request1.setOwner(savedOwner);
         requestRepository.save(request1);
+        Thread.sleep(1000);
         Request request2 = new Request();
         request2.setDescription("description2");
         request2.setOwner(savedOwner);
@@ -40,10 +41,10 @@ public class RequestRepositoryTest {
         List<Request> requests = requestRepository.findAllByOwnerOrderByCreatedDesc(savedOwner);
 
         assertEquals(2, requests.size());
-        assertEquals("description1", requests.get(0).getDescription());
+        assertEquals("description2", requests.get(0).getDescription());
         assertEquals("user", requests.get(0).getOwner().getName());
         assertEquals("user@mail.com", requests.get(0).getOwner().getEmail());
-        assertEquals("description2", requests.get(1).getDescription());
+        assertEquals("description1", requests.get(1).getDescription());
         assertEquals("user", requests.get(1).getOwner().getName());
         assertEquals("user@mail.com", requests.get(1).getOwner().getEmail());
     }
