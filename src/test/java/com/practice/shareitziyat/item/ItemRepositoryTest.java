@@ -1,10 +1,14 @@
 package com.practice.shareitziyat.item;
 
+import com.practice.shareitziyat.booking.BookingRepository;
 import com.practice.shareitziyat.user.User;
 import com.practice.shareitziyat.user.UserRepository;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -18,6 +22,16 @@ public class ItemRepositoryTest {
     private UserRepository userRepository;
     @Autowired
     private ItemRepository itemRepository;
+
+    @Autowired
+    private BookingRepository bookingRepository;
+
+    @BeforeEach
+    public void cleanUp() {
+        bookingRepository.deleteAll();
+        itemRepository.deleteAll();
+        userRepository.deleteAll();
+    }
 
     @Test
     public void findAllByOwnerIdTest() {

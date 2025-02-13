@@ -1,5 +1,6 @@
 package com.practice.shareitziyat.request;
 
+import com.practice.shareitziyat.comparators.RequestCreatedDateCompatator;
 import com.practice.shareitziyat.exceptions.NotFoundException;
 import com.practice.shareitziyat.item.Item;
 import com.practice.shareitziyat.item.dto.ItemMapper;
@@ -111,11 +112,8 @@ public class RequestServiceTest {
         Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(user));
         Mockito.when(requestRepository.findAllByOwnerOrderByCreatedDesc(Mockito.any(User.class)))
                 .thenReturn(requests.stream()
-                        .sorted((r1, r2) -> {
-                            if (r1.getCreated().isAfter(r2.getCreated())) return -1;
-                            else if (r1.getCreated().isBefore(r2.getCreated())) return 1;
-                            else return 0;
-                        }).toList());
+                        .sorted(new RequestCreatedDateCompatator())
+                        .toList());
 
         List<Request> requestList = requestService.findAllByUser(1L);
 
@@ -158,11 +156,7 @@ public class RequestServiceTest {
         Mockito.when(requestRepository.findAll(Mockito.any(PageRequest.class)))
                 .thenAnswer(invocationOnMock -> {
                     List<Request> requests1 = (requests.stream()
-                            .sorted((r1, r2) -> {
-                                if (r1.getCreated().isAfter(r2.getCreated())) return -1;
-                                else if (r1.getCreated().isBefore(r2.getCreated())) return 1;
-                                else return 0;
-                            }).toList());
+                            .sorted(new RequestCreatedDateCompatator()).toList());
                     return new PageImpl<>(requests1);
                 });
 

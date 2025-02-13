@@ -4,11 +4,14 @@ import com.practice.shareitziyat.item.Item;
 import com.practice.shareitziyat.item.ItemRepository;
 import com.practice.shareitziyat.user.User;
 import com.practice.shareitziyat.user.UserRepository;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
