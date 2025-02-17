@@ -4,7 +4,7 @@ import com.practice.shareitziyat.request.Request;
 
 import java.util.Comparator;
 
-public class RequestCreatedDateCompatator implements Comparator<Request> {
+public class RequestCreatedDateComparator implements Comparator<Request> {
     @Override
     public int compare(Request o1, Request o2) {
         if (o1.getCreated().isAfter(o2.getCreated())) return -1;
