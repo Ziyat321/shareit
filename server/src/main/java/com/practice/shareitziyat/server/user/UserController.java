@@ -1,0 +1,55 @@
+package com.practice.shareitziyat.server.user;
+
+import com.practice.shareitziyat.server.user.dto.UserCreateDto;
+import com.practice.shareitziyat.server.user.dto.UserMapper;
+import com.practice.shareitziyat.server.user.dto.UserResponseDto;
+import com.practice.shareitziyat.server.user.dto.UserUpdateDto;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/users")
+@RequiredArgsConstructor
+@Slf4j
+public class UserController {
+    private final UserService userService;
+    private final UserMapper userMapper;
+
+    @PostMapping
+    public UserResponseDto create(@RequestBody UserCreateDto userCreate) {
+        System.out.println(userCreate);
+        UserResponseDto response = userMapper.toResponse(
+                userService.create(userMapper.fromCreate(userCreate)));
+        System.out.println(response);
+        return response;
+    }
+
+    @PatchMapping("/{userId}")
+    public UserResponseDto update(
+            @PathVariable Long userId,
+            @Valid @RequestBody UserUpdateDto userUpdate) {
+        log.debug("PATCH /users/{}", userId);
+        return userMapper.toResponse(
+                userService.update(userMapper.fromUpdate(userUpdate), userId)
+        );
+    }
+
+    @GetMapping
+    public List<UserResponseDto> findAll() {
+        return userMapper.toResponse(userService.findAll());
+    }
+
+    @GetMapping("/{userId}")
+    public UserResponseDto findById(@PathVariable Long userId) {
+        return userMapper.toResponse(userService.findById(userId));
+    }
+
+    @DeleteMapping("/{userId}")
+    public void deleteById(@PathVariable Long userId) {
+        userService.deleteById(userId);
+    }
+}
