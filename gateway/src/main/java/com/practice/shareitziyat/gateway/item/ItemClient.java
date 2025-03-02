@@ -29,20 +29,4 @@ public class ItemClient {
                 .getBody();
 
     }
-
-    private <T, R> R post(T entity, String url) {
-        HttpEntity<T> request = new HttpEntity<>(entity);
-        return (R) restTemplate.exchange(url, HttpMethod.POST, request, Object.class).getBody();
-    }
-
-    private <T, R> R post(T entity, String url, long userId) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(RequestConstants.USER_HEADER, String.valueOf(userId));
-        HttpEntity<T> request = new HttpEntity<>(entity, headers);
-        return (R) restTemplate.exchange(url, HttpMethod.POST, request, Object.class).getBody();
-    }
-
-//    private <T> T post(T entity, String url, int id) {
-//        HttpHeaders headers = new HttpHeaders();
-//    }
 }
