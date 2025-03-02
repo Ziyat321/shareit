@@ -9,6 +9,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 import java.util.Map;
 
@@ -21,7 +22,7 @@ public class UserClient extends BaseClient {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
-                        .requestFactory(HttpComponentsClientHttpRequestFactory::new)
+                        .requestFactory(HttpComponentsClientHttpRequestFactory.class)
                         .build()
         );
     }
