@@ -18,19 +18,19 @@ public class BookingController {
     private final BookingMapper bookingMapper;
 
     @PostMapping
-    public BookingResponseDto create(@Valid @RequestBody BookingCreateDto bookingCreate,
-                                     @RequestHeader(RequestConstants.USER_HEADER) Long userId){
-            return bookingMapper.toResponse(
-                    bookingService.create(bookingMapper.fromCreate(bookingCreate), userId))
-                    ;
+    public BookingResponseDto create(@RequestBody BookingCreateDto bookingCreate,
+                                     @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
+        return bookingMapper.toResponse(
+                bookingService.create(bookingMapper.fromCreate(bookingCreate), userId))
+                ;
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingResponseDto update ( @PathVariable int bookingId,
-                                      @RequestParam boolean approved,
-                                      @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
+    public BookingResponseDto update(@PathVariable int bookingId,
+                                     @RequestParam boolean approved,
+                                     @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
         return bookingMapper.toResponse(
-                bookingService.update( bookingId, userId, approved)) ;
+                bookingService.update(bookingId, userId, approved));
 
     }
 
@@ -43,7 +43,7 @@ public class BookingController {
 
     @GetMapping
     public List<BookingResponseDto> findAllByBooker(@RequestParam(defaultValue = "ALL") BookingState state,
-                                                    @RequestHeader(RequestConstants.USER_HEADER) Long userId){
+                                                    @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
         return bookingMapper.toResponse(
                 bookingService.findAllByBooker(userId, state)
         );
@@ -51,7 +51,7 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<BookingResponseDto> findAllByOwner(@RequestParam(defaultValue = "ALL") BookingState state,
-                                                   @RequestHeader(RequestConstants.USER_HEADER) Long ownerId){
+                                                   @RequestHeader(RequestConstants.USER_HEADER) Long ownerId) {
         return bookingMapper.toResponse(
                 bookingService.findAllByOwner(ownerId, state)
         );

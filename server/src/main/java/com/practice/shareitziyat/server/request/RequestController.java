@@ -18,8 +18,8 @@ public class RequestController {
     private final RequestMapper requestMapper;
 
     @PostMapping
-    public RequestResponseDto create (@Valid @RequestBody RequestCreateDto requestCreate,
-                                      @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
+    public RequestResponseDto create(@RequestBody RequestCreateDto requestCreate,
+                                     @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
         return requestMapper.toResponse(
                 requestService.create(requestMapper.fromCreate(requestCreate), userId)
         );

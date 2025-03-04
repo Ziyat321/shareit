@@ -16,7 +16,7 @@ public class ItemController {
     private final ItemMapper itemMapper;
 
     @PostMapping
-    public ItemResponseDto create(@Valid @RequestBody ItemCreateDto itemCreate,
+    public ItemResponseDto create(@RequestBody ItemCreateDto itemCreate,
                                   @RequestHeader(RequestConstants.USER_HEADER) Long userId,
                                   @RequestParam(required = false) Long requestId) {
         return itemMapper.toResponse(
@@ -42,7 +42,7 @@ public class ItemController {
         return itemMapper.toResponse(itemService.findById(itemId));
     }
 
-    @DeleteMapping("{itemId}")
+    @DeleteMapping("/{itemId}")
     public void deleteById(@PathVariable Long itemId) {
         itemService.deleteById(itemId);
     }
@@ -54,7 +54,7 @@ public class ItemController {
 
     @PostMapping("/{itemId}/comment")
     public CommentResponseDto createComment(@PathVariable Long itemId,
-                                            @Valid @RequestBody CommentCreateDto commentCreate,
+                                            @RequestBody CommentCreateDto commentCreate,
                                             @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
         return itemMapper.toResponseComment(
                 itemService.createComment(itemMapper.fromCreateComment(commentCreate), itemId, userId)
