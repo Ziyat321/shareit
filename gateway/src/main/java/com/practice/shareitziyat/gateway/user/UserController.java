@@ -4,8 +4,6 @@ import com.practice.shareitziyat.gateway.user.UserClient;
 import com.practice.shareitziyat.server.user.dto.UserCreateDto;
 import com.practice.shareitziyat.server.user.dto.UserUpdateDto;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -24,7 +22,7 @@ public class UserController {
         return client.findAll();
     }
 
-    @GetMapping("{/userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<Object> findById(@PathVariable Long userId) {
         return client.findById(userId);
     }

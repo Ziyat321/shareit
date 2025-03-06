@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
@@ -23,13 +22,13 @@ public class ItemClient extends BaseClient {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
-                        .requestFactory(HttpComponentsClientHttpRequestFactory.class)
+//                        .requestFactory(SimpleClientHttpRequestFactory.class)
                         .build()
         );
     }
 
-    public ResponseEntity<Object> create(ItemCreateDto itemCreateDto, long userId, Long requestId) {
-        return post("", userId, Map.of("requestId", Long.toString(requestId)), itemCreateDto);
+    public ResponseEntity<Object> create(ItemCreateDto itemCreateDto, long userId) {
+        return post("", userId, itemCreateDto);
     }
 
     public ResponseEntity<Object> update(long itemId, ItemUpdateDto itemUpdate, long userId) {
@@ -49,7 +48,7 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> search(String text) {
-        return get("/search", null, Map.of("text", text));
+        return get("/search?text={text}", null, Map.of("text", text));
     }
 
     public ResponseEntity<Object> createComment(long itemId, CommentCreateDto commentCreate, long userId) {

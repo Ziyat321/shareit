@@ -22,7 +22,7 @@ public class BookingClient extends BaseClient {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
-                        .requestFactory(HttpComponentsClientHttpRequestFactory.class)
+//                        .requestFactory()
                         .build()
         );
     }
@@ -32,8 +32,8 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> update(int bookingId, boolean approved, long userId) {
-        return patch("/{bookingId}", userId,
-                Map.of("booingId", Integer.toString(bookingId), "approved", Boolean.toString(approved)), null);
+        return patch("/{bookingId}?approved={approved}", userId,
+                Map.of("bookingId", Integer.toString(bookingId), "approved", approved), null);
     }
 
     public ResponseEntity<Object> findById(int bookingId, long userId) {

@@ -17,9 +17,8 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<Object> create(@Valid @RequestBody ItemCreateDto itemCreate,
-                                         @RequestHeader(RequestConstants.USER_HEADER) Long userId,
-                                         @RequestParam(required = false) Long requestId) {
-        return itemClient.create(itemCreate, userId, requestId);
+                                         @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
+        return itemClient.create(itemCreate, userId);
     }
 
     @PatchMapping("/{itemId}")

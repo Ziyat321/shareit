@@ -2,9 +2,12 @@ package com.practice.shareitziyat.gateway.booking;
 
 import com.practice.shareitziyat.server.booking.BookingState;
 import com.practice.shareitziyat.server.booking.dto.BookingCreateDto;
+import com.practice.shareitziyat.server.exceptions.BadRequestException;
+import com.practice.shareitziyat.server.exceptions.ErrorResponse;
 import com.practice.shareitziyat.server.utils.RequestConstants;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,14 +37,22 @@ public class BookingController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> findAllByBooker(@RequestParam(defaultValue = "ALL") BookingState state,
+    public ResponseEntity<Object> findAllByBooker(@RequestParam(defaultValue = "ALL") String state,
                                                   @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
-        return bookingClient.findAllByBooker(state, userId);
+        BookingState bookingState = BookingState.of(state);
+        return bookingClient.findAllByBooker(bookingState, userId);
     }
 
     @GetMapping("/owner")
-    public ResponseEntity<Object> findAllByOwner(@RequestParam(defaultValue = "ALL") BookingState state,
+    public ResponseEntity<Object> findAllByOwner(@RequestParam(defaultValue = "ALL") String state,
                                                  @RequestHeader(RequestConstants.USER_HEADER) Long ownerId) {
-        return bookingClient.findAllByOwner(state, ownerId);
+        BookingState bookingState = BookingState.of(state);
+        return bookingClient.findAllByOwner(bookingState, ownerId);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequest(BadRequestException e) {
+        return new ErrorResponse(e.getMessage(), null);
     }
 }
