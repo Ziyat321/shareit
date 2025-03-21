@@ -39,8 +39,8 @@ public class ItemClient extends BaseClient {
         return get("", userId);
     }
 
-    public ResponseEntity<Object> findById(long itemId) {
-        return get("/{itemId}", null, Map.of("itemId", Long.toString(itemId)));
+    public ResponseEntity<Object> findById(long itemId ,long userId) {
+        return get("/{itemId}", userId , Map.of("itemId", Long.toString(itemId)));
     }
 
     public ResponseEntity<Object> deleteById(long itemId) {

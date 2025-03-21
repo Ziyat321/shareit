@@ -32,7 +32,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item create(Item item, Long userId, Long requestId) {
 //        Long requestId = item.getRequest().getId();
-        if(requestId != null) {
+        if (requestId != null) {
             Request request = requestRepository.findById(requestId)
                     .orElseThrow(() -> new NotFoundException("Request not found"));
             item.setRequest(request);
@@ -47,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
     public Item update(Item updatedItem, Long itemId, Long userId) {
         // существует ли пользователь userId
         findUserById(userId);
-        Item existingItem = findById(itemId);
+        Item existingItem = findById(itemId, userId);
         if (!existingItem.getOwner().getId().equals(userId)) {
             throw new ForbiddenException("Wrong owner");
         }
@@ -58,9 +58,16 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item findById(Long itemId) {
-        return itemRepository.findById(itemId)
+    public Item findById(Long itemId, Long userId) {
+        Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
+        if (item.getOwner().getId().equals(userId)) {
+            bookingRepository.findLastBooking(itemId, LocalDateTime.now(), BookingStatus.APPROVED)
+                    .ifPresent(item::setLastBooking);
+            bookingRepository.findNextBooking(itemId, LocalDateTime.now(), BookingStatus.APPROVED)
+                    .ifPresent(item::setNextBooking);
+        }
+        return item;
     }
 
     @Override
@@ -80,6 +87,8 @@ public class ItemServiceImpl implements ItemService {
     public List<Item> findAll(Long userId) {
         // существует ли пользователь userId
         findUserById(userId);
+
+        // TODO инициализировать lastBooking и nextBooking
         return itemRepository.findAllByOwner_Id(userId);
     }
 
@@ -88,7 +97,7 @@ public class ItemServiceImpl implements ItemService {
 
         Booking booking = bookingRepository.findByUser_IdAndItem_IdAndStatusIsAndStartDateBefore(
                 userId, itemId, BookingStatus.APPROVED, LocalDateTime.now()
-        ).stream().findFirst().orElseThrow(()-> new BadRequestException(".."));
+        ).stream().findFirst().orElseThrow(() -> new BadRequestException(".."));
         Item item = booking.getItem();
         User user = booking.getUser();
 
@@ -106,7 +115,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Comment> findCommentsByItem(Long itemId) {
-        findById(itemId);
+//        findById(itemId, userId);
         return commentRepository.findAllByItem_Id(itemId);
     }
 

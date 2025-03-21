@@ -34,8 +34,8 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ResponseEntity<Object> findById(@PathVariable Long itemId) {
-        return itemClient.findById(itemId);
+    public ResponseEntity<Object> findById(@PathVariable Long itemId,@RequestHeader(RequestConstants.USER_HEADER) Long userId) {
+        return itemClient.findById(itemId, userId);
     }
 
     @DeleteMapping("/{itemId}")

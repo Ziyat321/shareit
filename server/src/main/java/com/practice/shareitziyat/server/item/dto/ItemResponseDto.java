@@ -1,6 +1,5 @@
 package com.practice.shareitziyat.server.item.dto;
 
-import com.practice.shareitziyat.server.booking.dto.BookingResponseDto;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -18,4 +17,11 @@ public class ItemResponseDto {
     BookingResponseDto nextBooking;
     List<CommentResponseDto> comments;
     Long requestId;
+
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class BookingResponseDto {
+        Long id;
+        Long bookerId;
+    }
 }

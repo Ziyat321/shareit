@@ -41,10 +41,10 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> findAllByBooker(BookingState state, long userId) {
-        return get("", userId, Map.of("state", state.toString()));
+        return get("?state={state}", userId, Map.of("state", state.toString()));
     }
 
     public ResponseEntity<Object> findAllByOwner(BookingState state, long ownerId) {
-        return get("/owner", ownerId, Map.of("state", state.toString()));
+        return get("/owner?state={state}", ownerId, Map.of("state", state.toString()));
     }
 }

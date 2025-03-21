@@ -1,5 +1,6 @@
 package com.practice.shareitziyat.server.item.dto;
 
+import com.practice.shareitziyat.server.booking.Booking;
 import com.practice.shareitziyat.server.item.Comment;
 import com.practice.shareitziyat.server.item.Item;
 import lombok.RequiredArgsConstructor;
@@ -7,11 +8,14 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static com.practice.shareitziyat.server.item.dto.ItemResponseDto.*;
+
 @Component
 @RequiredArgsConstructor
 public class ItemMapper {
 
 //    private final CommentMapper commentMapper;
+//    private final BookingMapper bookingMapper;
 
     public Item fromCreate(ItemCreateDto itemCreate) {
         Item item = new Item();
@@ -43,6 +47,12 @@ public class ItemMapper {
         }
         if(item.getRequest() != null) {
             itemResponse.setRequestId(item.getRequest().getId());
+        }
+        if(item.getLastBooking() != null) {
+            itemResponse.setLastBooking(toResponse(item.getLastBooking()));
+        }
+        if(item.getNextBooking() != null) {
+            itemResponse.setNextBooking(toResponse(item.getNextBooking()));
         }
         return itemResponse;
     }
@@ -85,5 +95,12 @@ public class ItemMapper {
 
     public List<CommentResponseDto> toResponseComment(List<Comment> comments){
         return comments.stream().map(this::toResponseComment).toList();
+    }
+
+    private BookingResponseDto toResponse(Booking booking){
+        BookingResponseDto bookingResponse = new BookingResponseDto();
+        bookingResponse.setId(booking.getId());
+        bookingResponse.setBookerId(booking.getUser().getId());
+        return bookingResponse;
     }
 }

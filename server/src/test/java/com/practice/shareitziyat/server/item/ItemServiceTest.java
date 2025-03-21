@@ -297,7 +297,7 @@ public class ItemServiceTest {
                     return Optional.of(item);
                 });
 
-        Item item = itemService.findById(1L);
+        Item item = itemService.findById(1L, 1L);
 
         assertEquals(1, item.getId());
         assertEquals("item1", item.getName());
@@ -317,7 +317,7 @@ public class ItemServiceTest {
                 .thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> itemService.findById(1L));
+                () -> itemService.findById(1L, 1L));
 
         assertEquals("User not found", exception.getMessage());
     }

@@ -36,7 +36,7 @@ public class BookingServiceImpl implements BookingService{
         if(!item.getAvailable()) {
             throw new BadRequestException("Item is not available");
         }
-        if(item.getOwner().equals(owner)) {
+        if(item.getOwner().getId().equals(owner.getId())) {
             throw new ForbiddenException("Wrong owner");
         }
         booking.setUser(owner);
@@ -51,8 +51,10 @@ public class BookingServiceImpl implements BookingService{
                 "Booking does not exist"));
 
         if(!bookingExisting.getItem().getOwner().getId().equals(userId)) {
-            throw new ForbiddenException("Wrong owner");
+            throw new NotFoundException("Wrong owner");
         }
+
+        // если booking.approved и approved=true - 400 BAD REQUEST
 
         BookingStatus bookingStatus = approved ? BookingStatus.APPROVED : BookingStatus.REJECTED;
         bookingExisting.setStatus(bookingStatus);
@@ -62,8 +64,13 @@ public class BookingServiceImpl implements BookingService{
 
     @Override
     public Booking findById(long bookingId, Long userId) {
-        getUserById(userId);
-        return bookingRepository.findById(bookingId).orElseThrow(()->new NotFoundException("Booking not found"));
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Booking not found"));
+        if (!booking.getUser().getId().equals(userId)
+                && !booking.getItem().getOwner().getId().equals(userId)) {
+            // TODO: add msg
+            throw new NotFoundException("");
+        }
+        return booking;
     }
 
     @Override
@@ -85,10 +92,10 @@ public class BookingServiceImpl implements BookingService{
                 );
             }
             case WAITING -> {
-                return bookingRepository.findAllByItem_Owner_IdAndStatusIs(owner.getId(), BookingStatus.WAITING);
+                return bookingRepository.findAllByItem_Owner_IdAndStatusIsOrderByStartDateDesc(owner.getId(), BookingStatus.WAITING);
             }
             case REJECTED -> {
-                return bookingRepository.findAllByItem_Owner_IdAndStatusIs(owner.getId(), BookingStatus.REJECTED);
+                return bookingRepository.findAllByItem_Owner_IdAndStatusIsOrderByStartDateDesc(owner.getId(), BookingStatus.REJECTED);
             }
             default -> {
                 return Collections.emptyList();
@@ -114,10 +121,10 @@ public class BookingServiceImpl implements BookingService{
                         booker.getId(), LocalDateTime.now(), LocalDateTime.now());
             }
             case WAITING -> {
-                return bookingRepository.findAllByUser_IdAndStatusIs(booker.getId(), BookingStatus.WAITING);
+                return bookingRepository.findAllByUser_IdAndStatusIsOrderByStartDateDesc(booker.getId(), BookingStatus.WAITING);
             }
             case REJECTED -> {
-                return bookingRepository.findAllByUser_IdAndStatusIs(booker.getId(), BookingStatus.REJECTED);
+                return bookingRepository.findAllByUser_IdAndStatusIsOrderByStartDateDesc(booker.getId(), BookingStatus.REJECTED);
             }
             default -> {
                 return Collections.emptyList();

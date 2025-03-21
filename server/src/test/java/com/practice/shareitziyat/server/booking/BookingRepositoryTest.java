@@ -114,8 +114,8 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void findAllByUser_IdAndStatusIsTest() {
-        bookings = bookingRepository.findAllByUser_IdAndStatusIs(1L, BookingStatus.WAITING);
+    public void findAllByUser_IdAndStatusIsOrderByStartDateDescTest() {
+        bookings = bookingRepository.findAllByUser_IdAndStatusIsOrderByStartDateDesc(1L, BookingStatus.WAITING);
 
         assertEquals(1, bookings.size());
         assertEquals(LocalDateTime.of(2025, 2,8, 12, 0, 0),
@@ -166,8 +166,8 @@ public class BookingRepositoryTest {
     }
 
     @Test
-    public void findAllByItem_Owner_IdAndStatusIsTest() {
-        bookings = bookingRepository.findAllByItem_Owner_IdAndStatusIs(3L, BookingStatus.WAITING);
+    public void findAllByItem_Owner_IdAndStatusIsOrderByStartDateDescTest() {
+        bookings = bookingRepository.findAllByItem_Owner_IdAndStatusIsOrderByStartDateDesc(3L, BookingStatus.WAITING);
 
         assertEquals(2, bookings.size());
         assertEquals(LocalDateTime.of(2025, 2,8, 12, 0, 0),

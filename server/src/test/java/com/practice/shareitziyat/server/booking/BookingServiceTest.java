@@ -387,7 +387,7 @@ public class BookingServiceTest {
                     return Optional.of(booking);
                 });
 
-        ForbiddenException exception = assertThrows(ForbiddenException.class,
+        NotFoundException exception = assertThrows(NotFoundException.class,
                 () -> bookingService.update(1L, 1L, true));
 
         assertEquals("Wrong owner", exception.getMessage());
@@ -571,7 +571,7 @@ public class BookingServiceTest {
         setForOwnerTest();
 
         mockitoSettingForOwnerTest();
-        Mockito.when(bookingRepository.findAllByItem_Owner_IdAndStatusIs(Mockito.anyLong(),
+        Mockito.when(bookingRepository.findAllByItem_Owner_IdAndStatusIsOrderByStartDateDesc(Mockito.anyLong(),
                         Mockito.any(BookingStatus.class)))
                 .thenAnswer(invocationOnMock -> {
                     long ownerId = invocationOnMock.getArgument(0);
@@ -610,7 +610,7 @@ public class BookingServiceTest {
         setForOwnerTest();
 
         mockitoSettingForOwnerTest();
-        Mockito.when(bookingRepository.findAllByItem_Owner_IdAndStatusIs(Mockito.anyLong(),
+        Mockito.when(bookingRepository.findAllByItem_Owner_IdAndStatusIsOrderByStartDateDesc(Mockito.anyLong(),
                         Mockito.any(BookingStatus.class)))
                 .thenAnswer(invocationOnMock -> {
                     long ownerId = invocationOnMock.getArgument(0);
@@ -764,7 +764,7 @@ public class BookingServiceTest {
         setForBookerTest();
 
         mockitoSettingForBookerTest();
-        Mockito.when(bookingRepository.findAllByUser_IdAndStatusIs(
+        Mockito.when(bookingRepository.findAllByUser_IdAndStatusIsOrderByStartDateDesc(
                 Mockito.anyLong(), Mockito.any(BookingStatus.class)))
                 .thenAnswer(invocationOnMock -> {
                     long bookerId = invocationOnMock.getArgument(0);
@@ -803,7 +803,7 @@ public class BookingServiceTest {
         setForBookerTest();
 
         mockitoSettingForBookerTest();
-        Mockito.when(bookingRepository.findAllByUser_IdAndStatusIs(
+        Mockito.when(bookingRepository.findAllByUser_IdAndStatusIsOrderByStartDateDesc(
                         Mockito.anyLong(), Mockito.any(BookingStatus.class)))
                 .thenAnswer(invocationOnMock -> {
                     long bookerId = invocationOnMock.getArgument(0);

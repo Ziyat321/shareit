@@ -38,8 +38,9 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemResponseDto findById(@PathVariable Long itemId) {
-        return itemMapper.toResponse(itemService.findById(itemId));
+    public ItemResponseDto findById(@PathVariable Long itemId,
+                                    @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
+        return itemMapper.toResponse(itemService.findById(itemId, userId));
     }
 
     @DeleteMapping("/{itemId}")

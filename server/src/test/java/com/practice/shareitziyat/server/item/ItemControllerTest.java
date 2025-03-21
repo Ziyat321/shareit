@@ -23,6 +23,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.practice.shareitziyat.server.utils.RequestConstants.USER_HEADER;
+
 @WebMvcTest(ItemController.class)
 public class ItemControllerTest {
     @Autowired
@@ -61,7 +63,7 @@ public class ItemControllerTest {
                 });
 
         mockMvc.perform(MockMvcRequestBuilders.post("/items?requestId=1")
-                        .header(RequestConstants.USER_HEADER, user.getId())
+                        .header(USER_HEADER, user.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(itemJson))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -100,7 +102,7 @@ public class ItemControllerTest {
                 });
 
         mockMvc.perform(MockMvcRequestBuilders.patch("/items/2")
-                        .header(RequestConstants.USER_HEADER, user.getId())
+                        .header(USER_HEADER, user.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(itemJson))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -136,7 +138,7 @@ public class ItemControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/items/3"));
         mockMvc.perform(MockMvcRequestBuilders.get("/items")
-                        .header(RequestConstants.USER_HEADER, owner.getId()))
+                        .header(USER_HEADER, owner.getId()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(2)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1))
@@ -158,10 +160,11 @@ public class ItemControllerTest {
         item.setDescription("description");
         item.setAvailable(true);
 
-        Mockito.when(itemService.findById(Mockito.anyLong()))
+        Mockito.when(itemService.findById(Mockito.anyLong(), Mockito.anyLong()))
                 .thenReturn(item);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/items/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/items/1")
+                        .header(USER_HEADER, "1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("item"))
@@ -241,7 +244,7 @@ public class ItemControllerTest {
                 });
 
         mockMvc.perform(MockMvcRequestBuilders.post("/items/1/comment")
-                .header(RequestConstants.USER_HEADER, user.getId())
+                .header(USER_HEADER, user.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonComment))
                 .andExpect(MockMvcResultMatchers.status().isOk())
