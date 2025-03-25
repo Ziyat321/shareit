@@ -3,6 +3,7 @@ package com.practice.shareitziyat.server.item.dto;
 import com.practice.shareitziyat.server.booking.Booking;
 import com.practice.shareitziyat.server.item.Comment;
 import com.practice.shareitziyat.server.item.Item;
+import com.practice.shareitziyat.server.request.Request;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -22,9 +23,12 @@ public class ItemMapper {
         item.setName(itemCreate.getName());
         item.setDescription(itemCreate.getDescription());
         item.setAvailable(itemCreate.getAvailable());
-//        Request request = new Request();
-//        request.setId(itemCreate.getRequestId());
-//        item.setRequest(request);
+        if (itemCreate.getRequestId() != null) {
+            Request request = new Request();
+            request.setId(itemCreate.getRequestId());
+            item.setRequest(request);
+        }
+
         return item;
     }
 
@@ -103,4 +107,5 @@ public class ItemMapper {
         bookingResponse.setBookerId(booking.getUser().getId());
         return bookingResponse;
     }
+
 }

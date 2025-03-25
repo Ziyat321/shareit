@@ -31,12 +31,12 @@ public class RequestClient extends BaseClient {
         return get("", userId);
     }
 
-    public ResponseEntity<Object> findAll(int from, int size) {
-        return get("/all", null,
+    public ResponseEntity<Object> findAll(Long userId, int from, int size) {
+        return get("/all", userId,
                 Map.of("from", Integer.toString(from), "size", Integer.toString(size)));
     }
 
-    public ResponseEntity<Object> findById(long requestId) {
-        return get("/{requestId}", null, Map.of("requestId", Long.toString(requestId)));
+    public ResponseEntity<Object> findById(long userId, long requestId) {
+        return get("/{requestId}", userId, Map.of("requestId", Long.toString(requestId)));
     }
 }

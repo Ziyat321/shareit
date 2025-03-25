@@ -160,7 +160,7 @@ public class RequestServiceTest {
                     return new PageImpl<>(requests1);
                 });
 
-        List<Request> requestList = requestService.findAll(0,2);
+        List<Request> requestList = requestService.findAll(2L, 0,2);
 
         assertEquals(2, requestList.size());
         assertEquals(2, requestList.get(0).getId());
@@ -194,7 +194,7 @@ public class RequestServiceTest {
 
         Mockito.when(requestRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(request));
 
-        Request requestFound = requestService.findById(1L);
+        Request requestFound = requestService.findById(2L, 1L);
 
         assertEquals(1, requestFound.getId());
         assertEquals("description", requestFound.getDescription());
@@ -212,7 +212,7 @@ public class RequestServiceTest {
         Mockito.when(requestRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> requestService.findById(1L));
+                () -> requestService.findById(2L, 1L));
 
         assertEquals("Request not found", exception.getMessage());
     }

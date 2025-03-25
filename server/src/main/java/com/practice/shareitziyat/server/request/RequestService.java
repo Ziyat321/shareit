@@ -7,7 +7,7 @@ public interface RequestService {
 
     List<Request> findAllByUser(Long userId);
 
-    List<Request> findAll(int from, int size);
+    List<Request> findAll(Long userId, int from, int size);
 
-    Request findById(Long requestId);
+    Request findById(Long userId, Long requestId);
 }

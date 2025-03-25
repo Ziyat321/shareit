@@ -54,7 +54,7 @@ public class ItemControllerTest {
 
         String itemJson = objectMapper.writeValueAsString(itemCreate);
 
-        Mockito.when(itemService.create(Mockito.any(Item.class), Mockito.anyLong(), Mockito.anyLong()))
+        Mockito.when(itemService.create(Mockito.any(Item.class), Mockito.anyLong()))
                 .thenAnswer(invocationOnMock -> {
                     Item item = invocationOnMock.getArgument(0);
                     item.setId(1L);

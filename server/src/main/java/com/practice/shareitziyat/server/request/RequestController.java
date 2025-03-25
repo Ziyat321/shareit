@@ -33,17 +33,19 @@ public class RequestController {
     }
 
     @GetMapping("/all")
-    public List<RequestResponseDto> findAll(@RequestParam int from,
-                                            @RequestParam int size) {
+    public List<RequestResponseDto> findAll(@RequestHeader(RequestConstants.USER_HEADER) Long userId,
+                                            @RequestParam(defaultValue = RequestConstants.DEFAULT_FROM) int from,
+                                            @RequestParam(defaultValue = RequestConstants.DEFAULT_SIZE) int size) {
         return requestMapper.toResponse(
-                requestService.findAll(from, size)
+                requestService.findAll(userId, from, size)
         );
     }
 
     @GetMapping("/{requestId}")
-    public RequestResponseDto findById(@PathVariable Long requestId) {
+    public RequestResponseDto findById(@RequestHeader(RequestConstants.USER_HEADER) Long userId,
+                                       @PathVariable Long requestId) {
         return requestMapper.toResponse(
-                requestService.findById(requestId)
+                requestService.findById(userId, requestId)
         );
     }
 }

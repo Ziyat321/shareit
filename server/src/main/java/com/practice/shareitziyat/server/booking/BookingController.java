@@ -43,17 +43,23 @@ public class BookingController {
 
     @GetMapping
     public List<BookingResponseDto> findAllByBooker(@RequestParam(defaultValue = "ALL") BookingState state,
+                                                    @RequestParam(defaultValue = RequestConstants.DEFAULT_FROM) int from,
+                                                    @RequestParam(defaultValue = RequestConstants.DEFAULT_SIZE) int size,
                                                     @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
+        int page = from/size;
         return bookingMapper.toResponse(
-                bookingService.findAllByBooker(userId, state)
+                bookingService.findAllByBooker(userId, state, page, size)
         );
     }
 
     @GetMapping("/owner")
     public List<BookingResponseDto> findAllByOwner(@RequestParam(defaultValue = "ALL") BookingState state,
+                                                   @RequestParam(defaultValue = RequestConstants.DEFAULT_FROM) int from,
+                                                   @RequestParam(defaultValue = RequestConstants.DEFAULT_SIZE) int size,
                                                    @RequestHeader(RequestConstants.USER_HEADER) Long ownerId) {
+        int page = from/size;
         return bookingMapper.toResponse(
-                bookingService.findAllByOwner(ownerId, state)
+                bookingService.findAllByOwner(ownerId, state, page, size)
         );
     }
 }

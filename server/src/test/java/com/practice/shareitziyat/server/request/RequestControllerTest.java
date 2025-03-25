@@ -161,7 +161,7 @@ public class RequestControllerTest {
         request2.setOwner(user);
         List<Request> requests = List.of(request1, request2);
 
-        Mockito.when(requestService.findAll(Mockito.anyInt(), Mockito.anyInt()))
+        Mockito.when(requestService.findAll(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(requests.stream()
                         .sorted((r1, r2) -> {
                             if (r1.getCreated().isAfter(r2.getCreated())) return -1;
@@ -211,7 +211,7 @@ public class RequestControllerTest {
         request2.setOwner(user);
         List<Request> requests = List.of(request1, request2);
 
-        Mockito.when(requestService.findById(Mockito.anyLong()))
+        Mockito.when(requestService.findById(Mockito.anyLong(), Mockito.anyLong()))
                 .thenAnswer(invocationOnMock -> {
                    long requestId = invocationOnMock.getArgument(0);
                    Optional<Request> requestOptional =  requests.stream()
@@ -220,7 +220,8 @@ public class RequestControllerTest {
                     return requestOptional.orElse(null);
                 });
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/requests/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/requests/1")
+                        .header(RequestConstants.USER_HEADER, 2L))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description")

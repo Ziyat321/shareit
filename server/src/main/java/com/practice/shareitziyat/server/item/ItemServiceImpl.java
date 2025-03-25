@@ -12,6 +12,7 @@ import com.practice.shareitziyat.server.request.RequestRepository;
 import com.practice.shareitziyat.server.user.User;
 import com.practice.shareitziyat.server.user.UserRepository;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Data
+@RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
@@ -30,10 +31,10 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
 
     @Override
-    public Item create(Item item, Long userId, Long requestId) {
+    public Item create(Item item, Long userId) {
 //        Long requestId = item.getRequest().getId();
-        if (requestId != null) {
-            Request request = requestRepository.findById(requestId)
+        if (item.getRequest() != null) {
+            Request request = requestRepository.findById(item.getRequest().getId())
                     .orElseThrow(() -> new NotFoundException("Request not found"));
             item.setRequest(request);
         }
@@ -89,7 +90,15 @@ public class ItemServiceImpl implements ItemService {
         findUserById(userId);
 
         // TODO инициализировать lastBooking и nextBooking
-        return itemRepository.findAllByOwner_Id(userId);
+        return itemRepository.findAllByOwner_IdOrderById(userId)
+                .stream()
+                .peek(item -> {
+                    bookingRepository.findLastBooking(item.getId(), LocalDateTime.now(), BookingStatus.APPROVED)
+                            .ifPresent(item::setLastBooking);
+                    bookingRepository.findNextBooking(item.getId(), LocalDateTime.now(), BookingStatus.APPROVED)
+                            .ifPresent(item::setNextBooking);
+                })
+                .toList();
     }
 
     @Override

@@ -218,7 +218,7 @@ public class BookingControllerTest {
         booker.setName("booker");
         booker.setEmail("booker@email.com");
 
-        Mockito.when(bookingService.findAllByBooker(Mockito.anyLong(), Mockito.any(BookingState.class)))
+        Mockito.when(bookingService.findAllByBooker(Mockito.anyLong(), Mockito.any(BookingState.class), Mockito.anyInt(), Mockito.anyInt()))
                 .thenAnswer(invocationOnMock -> {
                     User owner = new User();
                     owner.setId(2L);
@@ -293,7 +293,7 @@ public class BookingControllerTest {
         owner.setName("owner");
         owner.setEmail("owner@email.com");
 
-        Mockito.when(bookingService.findAllByOwner(Mockito.anyLong(), Mockito.any(BookingState.class)))
+        Mockito.when(bookingService.findAllByOwner(Mockito.anyLong(), Mockito.any(BookingState.class), Mockito.anyInt(), Mockito.anyInt()))
                 .thenAnswer(invocationOnMock -> {
                     User booker = new User();
                     booker.setId(1L);

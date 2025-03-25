@@ -57,19 +57,22 @@ public class ItemServiceTest {
         item.setName("item");
         item.setDescription("description");
         item.setAvailable(true);
+        Request request = new Request();
+        request.setId(1L);
+        item.setRequest(request);
 
         Mockito.when(requestRepository.findById(Mockito.anyLong()))
                 .thenAnswer(invocation -> {
                     long requestId = invocation.getArgument(0);
-                    Request request = new Request();
-                    request.setId(requestId);
-                    request.setDescription("description_request");
-                    request.setCreated(LocalDateTime.of(2025, 1, 3, 19, 15, 0));
+                    Request request1= new Request();
+                    request1.setId(requestId);
+                    request1.setDescription("description_request");
+                    request1.setCreated(LocalDateTime.of(2025, 1, 3, 19, 15, 0));
                     User user = new User();
                     user.setName("request_owner");
                     user.setEmail("request_owner@mail.com");
-                    request.setOwner(user);
-                    return Optional.of(request);
+                    request1.setOwner(user);
+                    return Optional.of(request1);
                 });
         Mockito.when(userRepository.findById(Mockito.anyLong()))
                 .thenAnswer(invocationOnMock -> {
@@ -83,7 +86,7 @@ public class ItemServiceTest {
         Mockito.when(itemRepository.save(Mockito.any(Item.class)))
                 .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
-        Item createdItem = itemService.create(item, 1L, 2L);
+        Item createdItem = itemService.create(item, 1L);
 
         assertEquals(1, createdItem.getId());
         assertEquals("item", createdItem.getName());
@@ -92,7 +95,7 @@ public class ItemServiceTest {
         assertEquals(1, createdItem.getOwner().getId());
         assertEquals("user_posting_for_request", createdItem.getOwner().getName());
         assertEquals("user@mail.com", createdItem.getOwner().getEmail());
-        assertEquals(2, createdItem.getRequest().getId());
+        assertEquals(1, createdItem.getRequest().getId());
         assertEquals("description_request", createdItem.getRequest().getDescription());
         assertEquals(LocalDateTime.of(2025, 1, 3, 19, 15, 0),
                 createdItem.getRequest().getCreated());
@@ -109,10 +112,13 @@ public class ItemServiceTest {
         item.setName("item");
         item.setDescription("description");
         item.setAvailable(true);
+        Request request = new Request();
+        request.setId(1L);
+        item.setRequest(request);
         Mockito.when(requestRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> itemService.create(item, 1L, 2L));
+                () -> itemService.create(item, 1L));
 
         assertEquals("Request not found", exception.getMessage());
     }
@@ -139,7 +145,7 @@ public class ItemServiceTest {
         Mockito.when(itemRepository.save(Mockito.any(Item.class)))
                 .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
-        Item createdItem = itemService.create(item, 1L, null);
+        Item createdItem = itemService.create(item, 1L);
 
         assertEquals(1, createdItem.getId());
         assertEquals("item", createdItem.getName());
@@ -436,7 +442,7 @@ public class ItemServiceTest {
                     user.setEmail("item_owner1@mail.com");
                     return Optional.of(user);
                 });
-        Mockito.when(itemRepository.findAllByOwner_Id(Mockito.anyLong()))
+        Mockito.when(itemRepository.findAllByOwner_IdOrderById(Mockito.anyLong()))
                 .thenAnswer(invocationOnMock -> {
                     long ownerId = invocationOnMock.getArgument(0);
                     return itemList.stream()

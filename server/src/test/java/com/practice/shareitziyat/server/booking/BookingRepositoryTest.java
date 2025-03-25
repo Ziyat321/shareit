@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 
 import java.time.LocalDateTime;
@@ -87,21 +89,24 @@ public class BookingRepositoryTest {
 
     @Test
     public void findAllByUser_IdOrderByStartDateDescTest() {
-        bookings = bookingRepository.findAllByUser_IdOrderByStartDateDesc(1L);
+        bookings = bookingRepository.findAllByUser_IdOrderByStartDateDesc(1L,
+                PageRequest.of(0, 3)).getContent();
         check();
     }
 
     @Test
-    public void findAllByUser_IdAndStartDateBeforeOrderByStartDateDescTest() {
-        bookings = bookingRepository.findAllByUser_IdAndStartDateBeforeOrderByStartDateDesc(1L,
-                LocalDateTime.of(2025, 2, 10, 12, 0, 0));
+    public void findAllByUser_IdAndEndDateBeforeOrderByStartDateDescTest() {
+        bookings = bookingRepository.findAllByUser_IdAndEndDateBeforeOrderByStartDateDesc(1L,
+                LocalDateTime.of(2025, 2, 10, 12, 0, 0),
+                PageRequest.of(0, 3)).getContent();
         check();
     }
 
     @Test
     public void findAllByUser_IdAndEndDateAfterOrderByStartDateDescTest() {
         bookings = bookingRepository.findAllByUser_IdAndEndDateAfterOrderByStartDateDesc(1L,
-                LocalDateTime.of(2025, 11, 1, 12, 0, 0));
+                LocalDateTime.of(2025, 11, 1, 12, 0, 0),
+                PageRequest.of(0, 3)).getContent();
         check();
     }
 
@@ -109,13 +114,15 @@ public class BookingRepositoryTest {
     public void findAllByUser_IdAndStartDateBeforeAndEndDateAfterOrderByStartDateDescTest() {
         bookings = bookingRepository.findAllByUser_IdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(1L,
                 LocalDateTime.of(2025, 2, 10, 12, 0, 0),
-                LocalDateTime.of(2025, 11, 1, 12, 0, 0));
+                LocalDateTime.of(2025, 11, 1, 12, 0, 0),
+                PageRequest.of(0, 3)).getContent();
         check();
     }
 
     @Test
     public void findAllByUser_IdAndStatusIsOrderByStartDateDescTest() {
-        bookings = bookingRepository.findAllByUser_IdAndStatusIsOrderByStartDateDesc(1L, BookingStatus.WAITING);
+        bookings = bookingRepository.findAllByUser_IdAndStatusIsOrderByStartDateDesc(1L, BookingStatus.WAITING,
+                PageRequest.of(0, 3)).getContent();
 
         assertEquals(1, bookings.size());
         assertEquals(LocalDateTime.of(2025, 2,8, 12, 0, 0),
@@ -134,15 +141,17 @@ public class BookingRepositoryTest {
 
     @Test
     public void findAllByItem_Owner_IdOrderByStartDateDescTest() {
-        bookings = bookingRepository.findAllByItem_Owner_IdOrderByStartDateDesc(3L);
+        bookings = bookingRepository.findAllByItem_Owner_IdOrderByStartDateDesc(3L,
+                PageRequest.of(0, 3)).getContent();
 
         check1();
     }
 
     @Test
-    public void findAllByItem_Owner_IdAndStartDateBeforeOrderByStartDateDesc() {
-        bookings = bookingRepository.findAllByItem_Owner_IdAndStartDateBeforeOrderByStartDateDesc(3L,
-                LocalDateTime.of(2025, 2, 20, 12, 0, 0));
+    public void findAllByItem_Owner_IdAndEndDateBeforeOrderByStartDateDesc() {
+        bookings = bookingRepository.findAllByItem_Owner_IdAndEndDateBeforeOrderByStartDateDesc(3L,
+                LocalDateTime.of(2025, 2, 20, 12, 0, 0),
+                PageRequest.of(0, 3)).getContent();
 
         check1();
     }
@@ -150,7 +159,8 @@ public class BookingRepositoryTest {
     @Test
     public void findAllByItem_Owner_IdAndEndDateAfterOrderByStartDateDesc() {
         bookings = bookingRepository.findAllByItem_Owner_IdAndEndDateAfterOrderByStartDateDesc(3L,
-                LocalDateTime.of(2025, 11, 10, 12, 0, 0));
+                LocalDateTime.of(2025, 11, 10, 12, 0, 0),
+                PageRequest.of(0, 3)).getContent();
 
         check1();
     }
@@ -159,15 +169,16 @@ public class BookingRepositoryTest {
     public void findAllByItem_Owner_IdAndStartDateBeforeAndEndDateAfterOrderByStartDateDescTest() {
         bookings = bookingRepository.findAllByItem_Owner_IdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(
                 3L,LocalDateTime.of(2025, 2, 20, 12, 0, 0),
-                LocalDateTime.of(2025, 11, 10, 12, 0, 0)
-                );
+                LocalDateTime.of(2025, 11, 10, 12, 0, 0),
+                PageRequest.of(0, 3)).getContent();
 
         check1();
     }
 
     @Test
     public void findAllByItem_Owner_IdAndStatusIsOrderByStartDateDescTest() {
-        bookings = bookingRepository.findAllByItem_Owner_IdAndStatusIsOrderByStartDateDesc(3L, BookingStatus.WAITING);
+        bookings = bookingRepository.findAllByItem_Owner_IdAndStatusIsOrderByStartDateDesc(3L, BookingStatus.WAITING,
+                PageRequest.of(0, 3)).getContent();
 
         assertEquals(2, bookings.size());
         assertEquals(LocalDateTime.of(2025, 2,8, 12, 0, 0),

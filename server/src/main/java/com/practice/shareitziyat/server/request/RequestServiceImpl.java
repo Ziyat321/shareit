@@ -32,14 +32,15 @@ public class RequestServiceImpl implements RequestService{
     }
 
     @Override
-    public List<Request> findAll(int from, int size) {
+    public List<Request> findAll(Long userId, int from, int size) {
         Sort sort = Sort.by(Sort.Direction.DESC, "created");
         PageRequest pageRequest = PageRequest.of(from, size, sort);
-        return requestRepository.findAll(pageRequest).getContent();
+        return requestRepository.findAllByOwnerIdNot(userId, pageRequest).getContent();
     }
 
     @Override
-    public Request findById(Long requestId) {
+    public Request findById(Long userId, Long requestId) {
+        findUserById(userId);
         return requestRepository.findById(requestId).orElseThrow(
                 () -> new NotFoundException("Request not found")
         );

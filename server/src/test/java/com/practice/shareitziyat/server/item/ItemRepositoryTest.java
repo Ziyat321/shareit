@@ -51,7 +51,7 @@ public class ItemRepositoryTest {
         item2.setOwner(savedUser);
         itemRepository.save(item2);
 
-        List<Item> items = itemRepository.findAllByOwner_Id(savedUser.getId());
+        List<Item> items = itemRepository.findAllByOwner_IdOrderById(savedUser.getId());
 
         assertEquals(2, items.size());
         assertEquals("Item1", items.get(0).getName());

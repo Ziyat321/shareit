@@ -17,10 +17,9 @@ public class ItemController {
 
     @PostMapping
     public ItemResponseDto create(@RequestBody ItemCreateDto itemCreate,
-                                  @RequestHeader(RequestConstants.USER_HEADER) Long userId,
-                                  @RequestParam(required = false) Long requestId) {
+                                  @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
         return itemMapper.toResponse(
-                itemService.create(itemMapper.fromCreate(itemCreate), userId, requestId));
+                itemService.create(itemMapper.fromCreate(itemCreate), userId));
     }
 
     @PatchMapping("/{itemId}")

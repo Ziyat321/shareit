@@ -6,14 +6,17 @@ import com.practice.shareitziyat.server.exceptions.BadRequestException;
 import com.practice.shareitziyat.server.exceptions.ErrorResponse;
 import com.practice.shareitziyat.server.utils.RequestConstants;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/bookings")
+@Validated
 public class BookingController {
     private final BookingClient bookingClient;
 
@@ -38,16 +41,20 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity<Object> findAllByBooker(@RequestParam(defaultValue = "ALL") String state,
+                                                  @RequestParam(defaultValue = RequestConstants.DEFAULT_FROM) @Min(0) int from,
+                                                  @RequestParam(defaultValue = RequestConstants.DEFAULT_SIZE) @Min(1) int size,
                                                   @RequestHeader(RequestConstants.USER_HEADER) Long userId) {
         BookingState bookingState = BookingState.of(state);
-        return bookingClient.findAllByBooker(bookingState, userId);
+        return bookingClient.findAllByBooker(bookingState, userId, from, size);
     }
 
     @GetMapping("/owner")
     public ResponseEntity<Object> findAllByOwner(@RequestParam(defaultValue = "ALL") String state,
+                                                 @RequestParam(defaultValue = RequestConstants.DEFAULT_FROM) @Min(0) int from,
+                                                 @RequestParam(defaultValue = RequestConstants.DEFAULT_SIZE) @Min(1) int size,
                                                  @RequestHeader(RequestConstants.USER_HEADER) Long ownerId) {
         BookingState bookingState = BookingState.of(state);
-        return bookingClient.findAllByOwner(bookingState, ownerId);
+        return bookingClient.findAllByOwner(bookingState, ownerId, from, size);
     }
 
     @ExceptionHandler
