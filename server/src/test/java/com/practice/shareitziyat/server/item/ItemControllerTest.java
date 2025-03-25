@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -25,7 +26,7 @@ import java.util.List;
 
 import static com.practice.shareitziyat.server.utils.RequestConstants.USER_HEADER;
 
-@WebMvcTest(ItemController.class)
+@WebMvcTest({ItemController.class, ItemMapper.class})
 public class ItemControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -33,11 +34,8 @@ public class ItemControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private ItemService itemService;
-
-    @SpyBean
-    private ItemMapper itemMapper;
 
     @Test
     @SneakyThrows

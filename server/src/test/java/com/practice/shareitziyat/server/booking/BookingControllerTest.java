@@ -14,9 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -24,7 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@WebMvcTest(BookingController.class)
+@WebMvcTest({BookingController.class, ItemMapper.class, UserMapper.class, BookingMapper.class})
 public class BookingControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -32,17 +31,8 @@ public class BookingControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private BookingService bookingService;
-
-    @SpyBean
-    private ItemMapper itemMapper;
-
-    @SpyBean
-    private UserMapper userMapper;
-
-    @SpyBean
-    private BookingMapper bookingMapper;
 
     final int CURRENT_YEAR = LocalDateTime.now().getYear();
 

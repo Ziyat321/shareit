@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
@@ -675,14 +676,13 @@ public class BookingServiceTest {
         setForBookerTest();
 
         mockitoSettingForBookerTest();
-        Mockito.when(bookingRepository.findAllByUser_IdOrderByStartDateDesc(Mockito.anyLong(),
-                        PageRequest.of(Mockito.anyInt(), Mockito.anyInt())))
+        Mockito.when(bookingRepository.findAllByUser_IdOrderByStartDateDesc(Mockito.anyLong(), Mockito.any(PageRequest.class)))
                 .thenAnswer(invocationOnMock -> {
                     long bookerId = invocationOnMock.getArgument(0);
-                    return bookings.stream()
+                    return new PageImpl<>(bookings.stream()
                             .filter(booking -> booking.getUser().getId().equals(bookerId))
                             .sorted(new BookingStartDateComparator())
-                            .toList();
+                            .toList());
                 });
 
         bookingList = bookingService.findAllByBooker(1L, BookingState.ALL, 0, 4);

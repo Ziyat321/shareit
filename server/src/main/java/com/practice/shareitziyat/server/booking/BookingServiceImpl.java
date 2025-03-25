@@ -30,7 +30,7 @@ public class BookingServiceImpl implements BookingService {
         if (!booking.getStartDate().isBefore(booking.getEndDate()))
         // TODO add msg exception
         {
-            throw new BadRequestException("");
+            throw new BadRequestException("Booking's start and end dates are invalid");
         }
 
         User owner = getUserById(userId);
@@ -74,7 +74,7 @@ public class BookingServiceImpl implements BookingService {
         if (!booking.getUser().getId().equals(userId)
                 && !booking.getItem().getOwner().getId().equals(userId)) {
             // TODO: add msg
-            throw new NotFoundException("");
+            throw new NotFoundException("User with no relation to the booking cannot watch it");
         }
         return booking;
     }

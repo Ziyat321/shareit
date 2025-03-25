@@ -677,17 +677,6 @@ public class ItemServiceTest {
         comment3.setItem(item2);
         List<Comment> commentList = List.of(comment1, comment2, comment3);
 
-        Mockito.when(itemRepository.findById(Mockito.anyLong()))
-                .thenAnswer(invocationOnMock -> {
-                    long itemId = invocationOnMock.getArgument(0);
-                    Item item = new Item();
-                    item.setId(itemId);
-                    item.setName("item1");
-                    item.setDescription("text1");
-                    item.setAvailable(true);
-                    item.setOwner(owner);
-                    return Optional.of(item);
-                });
         Mockito.when(commentRepository.findAllByItem_Id(Mockito.anyLong()))
                 .thenAnswer(invocationOnMock -> {
                     long itemId = invocationOnMock.getArgument(0);

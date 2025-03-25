@@ -106,7 +106,7 @@ public class ItemServiceImpl implements ItemService {
 
         Booking booking = bookingRepository.findByUser_IdAndItem_IdAndStatusIsAndStartDateBefore(
                 userId, itemId, BookingStatus.APPROVED, LocalDateTime.now()
-        ).stream().findFirst().orElseThrow(() -> new BadRequestException(".."));
+        ).stream().findFirst().orElseThrow(() -> new BadRequestException("Booking with such item and user does not exist"));
         Item item = booking.getItem();
         User user = booking.getUser();
 

@@ -1,6 +1,7 @@
 package com.practice.shareitziyat.server.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.practice.shareitziyat.server.comparators.RequestCreatedDateComparator;
 import com.practice.shareitziyat.server.item.dto.ItemMapper;
 import com.practice.shareitziyat.server.request.dto.RequestCreateDto;
 import com.practice.shareitziyat.server.request.dto.RequestMapper;
@@ -13,18 +14,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-@WebMvcTest(RequestController.class)
+@WebMvcTest({RequestController.class, ItemMapper.class, UserMapper.class, RequestMapper.class})
 public class RequestControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -32,17 +31,8 @@ public class RequestControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private RequestService requestService;
-
-    @SpyBean
-    private ItemMapper itemMapper;
-
-    @SpyBean
-    private UserMapper userMapper;
-
-    @SpyBean
-    private RequestMapper requestMapper;
 
     @Test
     @SneakyThrows
@@ -163,13 +153,10 @@ public class RequestControllerTest {
 
         Mockito.when(requestService.findAll(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(requests.stream()
-                        .sorted((r1, r2) -> {
-                            if (r1.getCreated().isAfter(r2.getCreated())) return -1;
-                            else if (r1.getCreated().isBefore(r2.getCreated())) return 1;
-                            else return 0;
-                        }).toList());
+                        .sorted(new RequestCreatedDateComparator()).toList());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/requests/all?from=0&size=2"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/requests/all?from=0&size=2")
+                        .header(RequestConstants.USER_HEADER, 2L))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(2)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(2))
@@ -204,21 +191,9 @@ public class RequestControllerTest {
         request1.setDescription("description1");
         request1.setCreated(LocalDateTime.of(2025, 2, 8, 12, 0, 0));
         request1.setOwner(user);
-        Request request2 = new Request();
-        request2.setId(2L);
-        request2.setDescription("description2");
-        request2.setCreated(LocalDateTime.of(2025, 2, 9, 12, 0, 0));
-        request2.setOwner(user);
-        List<Request> requests = List.of(request1, request2);
 
         Mockito.when(requestService.findById(Mockito.anyLong(), Mockito.anyLong()))
-                .thenAnswer(invocationOnMock -> {
-                   long requestId = invocationOnMock.getArgument(0);
-                   Optional<Request> requestOptional =  requests.stream()
-                           .filter(request -> request.getId().equals(requestId))
-                           .findFirst();
-                    return requestOptional.orElse(null);
-                });
+                .thenReturn(request1);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/requests/1")
                         .header(RequestConstants.USER_HEADER, 2L))
