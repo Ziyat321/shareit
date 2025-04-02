@@ -4,6 +4,7 @@ import com.practice.shareitziyat.server.item.Item;
 import com.practice.shareitziyat.server.item.ItemRepository;
 import com.practice.shareitziyat.server.user.User;
 import com.practice.shareitziyat.server.user.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +87,11 @@ public class BookingRepositoryTest {
         booking3.setUser(savedUser2);
         bookingRepository.save(booking3);
     }
+//
+//    @AfterEach
+//    public void cleanup() {
+//        bookingRepository.deleteAll();
+//    }
 
     @Test
     public void findAllByUser_IdOrderByStartDateDescTest() {

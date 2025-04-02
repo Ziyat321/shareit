@@ -153,14 +153,14 @@ public class RequestServiceTest {
         request2.setOwner(user);
         List<Request> requests = List.of(request1, request2);
 
-        Mockito.when(requestRepository.findAll(Mockito.any(PageRequest.class)))
+        Mockito.when(requestRepository.findAllByOwnerIdNot(Mockito.anyLong(), Mockito.any(PageRequest.class)))
                 .thenAnswer(invocationOnMock -> {
                     List<Request> requests1 = (requests.stream()
                             .sorted(new RequestCreatedDateComparator()).toList());
                     return new PageImpl<>(requests1);
                 });
 
-        List<Request> requestList = requestService.findAll(2L, 0,2);
+        List<Request> requestList = requestService.findAll(2L, 0, 2);
 
         assertEquals(2, requestList.size());
         assertEquals(2, requestList.get(0).getId());
@@ -192,6 +192,7 @@ public class RequestServiceTest {
         request.setCreated(LocalDateTime.of(2025, 1, 8, 12, 0, 0));
         request.setOwner(user);
 
+        Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(user));
         Mockito.when(requestRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(request));
 
         Request requestFound = requestService.findById(2L, 1L);
@@ -209,6 +210,15 @@ public class RequestServiceTest {
     public void findByIdExceptionTest() {
         RequestService requestService = new RequestServiceImpl(requestRepository, userRepository, requestMapper);
 
+        Mockito.when(userRepository.findById(Mockito.anyLong())).
+                thenAnswer(invocationOnMock -> {
+                    long userId = invocationOnMock.getArgument(0);
+                    User user = new User();
+                    user.setId(userId);
+                    user.setName("user");
+                    user.setEmail("user@mail.com");
+                    return Optional.of(user);
+                });
         Mockito.when(requestRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,

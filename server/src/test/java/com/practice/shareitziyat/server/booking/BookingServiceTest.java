@@ -254,6 +254,7 @@ public class BookingServiceTest {
                     booking.setId(bookingId);
                     booking.setStartDate(LocalDateTime.of(2025, 2, 13, 12, 0, 0));
                     booking.setEndDate(LocalDateTime.of(2025, 12, 31, 12, 0, 0));
+                    booking.setStatus(BookingStatus.REJECTED);
                     User booker = new User();
                     booker.setId(2L);
                     booker.setName("booker");
@@ -306,6 +307,7 @@ public class BookingServiceTest {
                     booking.setId(bookingId);
                     booking.setStartDate(LocalDateTime.of(2025, 2, 13, 12, 0, 0));
                     booking.setEndDate(LocalDateTime.of(2025, 12, 31, 12, 0, 0));
+                    booking.setStatus(BookingStatus.APPROVED);
                     User booker = new User();
                     booker.setId(2L);
                     booker.setName("booker");
@@ -396,18 +398,9 @@ public class BookingServiceTest {
     }
 
     @Test
-    public void findByIdTest() {
+    public void updateException3() {
         BookingService bookingService = new BookingServiceImpl(bookingRepository, userRepository, itemRepository);
 
-        Mockito.when(userRepository.findById(Mockito.anyLong()))
-                .thenAnswer(invocationOnMock -> {
-                    long userId = invocationOnMock.getArgument(0);
-                    User user = new User();
-                    user.setId(userId);
-                    user.setName("user");
-                    user.setEmail("user@email.com");
-                    return Optional.of(user);
-                });
         Mockito.when(bookingRepository.findById(Mockito.anyLong()))
                 .thenAnswer(invocationOnMock -> {
                     long bookingId = invocationOnMock.getArgument(0);
@@ -435,6 +428,43 @@ public class BookingServiceTest {
                     return Optional.of(booking);
                 });
 
+        BadRequestException exception = assertThrows(BadRequestException.class,
+                () -> bookingService.update(1L, 1L, true));
+
+        assertEquals("Approved booking cannot be approved once again", exception.getMessage());
+    }
+
+    @Test
+    public void findByIdTest() {
+        BookingService bookingService = new BookingServiceImpl(bookingRepository, userRepository, itemRepository);
+
+        Mockito.when(bookingRepository.findById(Mockito.anyLong()))
+                .thenAnswer(invocationOnMock -> {
+                    long bookingId = invocationOnMock.getArgument(0);
+                    Booking booking = new Booking();
+                    booking.setId(bookingId);
+                    booking.setStartDate(LocalDateTime.of(2025, 2, 13, 12, 0, 0));
+                    booking.setEndDate(LocalDateTime.of(2025, 12, 31, 12, 0, 0));
+                    booking.setStatus(BookingStatus.APPROVED);
+                    User booker = new User();
+                    booker.setId(2L);
+                    booker.setName("booker");
+                    booker.setEmail("booker@email.com");
+                    booking.setUser(booker);
+                    Item item = new Item();
+                    item.setId(1L);
+                    item.setName("item");
+                    item.setDescription("description");
+                    item.setAvailable(true);
+                    User owner = new User();
+                    owner.setId(3L);
+                    owner.setName("item_owner");
+                    owner.setEmail("item_owner@email.com");
+                    item.setOwner(owner);
+                    booking.setItem(item);
+                    return Optional.of(booking);
+                });
+
         Booking foundBooking = bookingService.findById(1, 3L);
 
         assertEquals(1, foundBooking.getId());
@@ -450,24 +480,15 @@ public class BookingServiceTest {
         assertEquals("item", foundBooking.getItem().getName());
         assertEquals("description", foundBooking.getItem().getDescription());
         assertEquals(true, foundBooking.getItem().getAvailable());
-        assertEquals(1, foundBooking.getItem().getOwner().getId());
+        assertEquals(3, foundBooking.getItem().getOwner().getId());
         assertEquals("item_owner", foundBooking.getItem().getOwner().getName());
         assertEquals("item_owner@email.com", foundBooking.getItem().getOwner().getEmail());
     }
 
     @Test
-    public void findByIdExceptionTest() {
+    public void findByIdExceptionTest1() {
         BookingService bookingService = new BookingServiceImpl(bookingRepository, userRepository, itemRepository);
 
-        Mockito.when(userRepository.findById(Mockito.anyLong()))
-                .thenAnswer(invocationOnMock -> {
-                    long userId = invocationOnMock.getArgument(0);
-                    User user = new User();
-                    user.setId(userId);
-                    user.setName("user");
-                    user.setEmail("user@email.com");
-                    return Optional.of(user);
-                });
         Mockito.when(bookingRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
@@ -477,19 +498,56 @@ public class BookingServiceTest {
     }
 
     @Test
+    public void findByIdExceptionTest2() {
+        BookingService bookingService = new BookingServiceImpl(bookingRepository, userRepository, itemRepository);
+
+        Mockito.when(bookingRepository.findById(Mockito.anyLong()))
+                .thenAnswer(invocationOnMock -> {
+                    long bookingId = invocationOnMock.getArgument(0);
+                    Booking booking = new Booking();
+                    booking.setId(bookingId);
+                    booking.setStartDate(LocalDateTime.of(2025, 2, 13, 12, 0, 0));
+                    booking.setEndDate(LocalDateTime.of(2025, 12, 31, 12, 0, 0));
+                    booking.setStatus(BookingStatus.APPROVED);
+                    User booker = new User();
+                    booker.setId(2L);
+                    booker.setName("booker");
+                    booker.setEmail("booker@email.com");
+                    booking.setUser(booker);
+                    Item item = new Item();
+                    item.setId(1L);
+                    item.setName("item");
+                    item.setDescription("description");
+                    item.setAvailable(true);
+                    User owner = new User();
+                    owner.setId(2L);
+                    owner.setName("item_owner");
+                    owner.setEmail("item_owner@email.com");
+                    item.setOwner(owner);
+                    booking.setItem(item);
+                    return Optional.of(booking);
+                });
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> bookingService.findById(1, 3L));
+
+        assertEquals("User with no relation to the booking cannot watch it", exception.getMessage());
+    }
+
+    @Test
     public void findAllByOwnerAllTest() {
         BookingService bookingService = new BookingServiceImpl(bookingRepository, userRepository, itemRepository);
         setForOwnerTest();
 
         mockitoSettingForOwnerTest();
         Mockito.when(bookingRepository.findAllByItem_Owner_IdOrderByStartDateDesc(Mockito.anyLong(),
-                        PageRequest.of(Mockito.anyInt(), Mockito.anyInt())))
+                        Mockito.any(PageRequest.class)))
                 .thenAnswer(invocationOnMock -> {
                     long ownerId = invocationOnMock.getArgument(0);
-                    return bookings.stream()
+                    return new PageImpl<>(bookings.stream()
                             .filter(booking -> booking.getItem().getOwner().getId().equals(ownerId))
                             .sorted(new BookingStartDateComparator())
-                            .toList();
+                            .toList());
                 });
 
         bookingList = bookingService.findAllByOwner(1L, BookingState.ALL, 0, 4);
@@ -504,15 +562,15 @@ public class BookingServiceTest {
 
         mockitoSettingForOwnerTest();
         Mockito.when(bookingRepository.findAllByItem_Owner_IdAndEndDateBeforeOrderByStartDateDesc(Mockito.anyLong(),
-                Mockito.any(LocalDateTime.class), PageRequest.of(Mockito.anyInt(), Mockito.anyInt())))
+                Mockito.any(LocalDateTime.class), Mockito.any(PageRequest.class)))
                 .thenAnswer(invocationOnMock -> {
                     long ownerId = invocationOnMock.getArgument(0);
                     LocalDateTime date =  invocationOnMock.getArgument(1);
-                    return bookings.stream()
+                    return new PageImpl<>(bookings.stream()
                             .filter(booking -> booking.getItem().getOwner().getId().equals(ownerId))
                             .filter(booking -> booking.getStartDate().isBefore(date))
                             .sorted(new BookingStartDateComparator())
-                            .toList();
+                            .toList());
                 });
 
         bookingList = bookingService.findAllByOwner(1L, BookingState.PAST, 0, 4);
@@ -527,15 +585,15 @@ public class BookingServiceTest {
 
         mockitoSettingForOwnerTest();
         Mockito.when(bookingRepository.findAllByItem_Owner_IdAndEndDateAfterOrderByStartDateDesc(Mockito.anyLong(),
-                        Mockito.any(LocalDateTime.class), PageRequest.of(Mockito.anyInt(), Mockito.anyInt())))
+                        Mockito.any(LocalDateTime.class), Mockito.any(PageRequest.class)))
                 .thenAnswer(invocationOnMock -> {
                     long ownerId = invocationOnMock.getArgument(0);
                     LocalDateTime date =  invocationOnMock.getArgument(1);
-                    return bookings.stream()
+                    return new PageImpl<>(bookings.stream()
                             .filter(booking -> booking.getItem().getOwner().getId().equals(ownerId))
                             .filter(booking -> booking.getEndDate().isAfter(date))
                             .sorted(new BookingStartDateComparator())
-                            .toList();
+                            .toList());
                 });
 
         bookingList = bookingService.findAllByOwner(1L, BookingState.FUTURE, 0, 4);
@@ -550,17 +608,17 @@ public class BookingServiceTest {
 
         mockitoSettingForOwnerTest();
         Mockito.when(bookingRepository.findAllByItem_Owner_IdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(Mockito.anyLong(),
-                        Mockito.any(LocalDateTime.class), Mockito.any(LocalDateTime.class), PageRequest.of(Mockito.anyInt(), Mockito.anyInt())))
+                        Mockito.any(LocalDateTime.class), Mockito.any(LocalDateTime.class), Mockito.any(PageRequest.class)))
                 .thenAnswer(invocationOnMock -> {
                     long ownerId = invocationOnMock.getArgument(0);
                     LocalDateTime date1 =  invocationOnMock.getArgument(1);
                     LocalDateTime date2 = invocationOnMock.getArgument(2);
-                    return bookings.stream()
+                    return new PageImpl<>(bookings.stream()
                             .filter(booking -> booking.getItem().getOwner().getId().equals(ownerId))
                             .filter(booking -> booking.getStartDate().isBefore(date1))
                             .filter(booking -> booking.getEndDate().isAfter(date2))
                             .sorted(new BookingStartDateComparator())
-                            .toList();
+                            .toList());
                 });
 
         bookingList = bookingService.findAllByOwner(1L, BookingState.CURRENT, 0, 4);
@@ -575,15 +633,15 @@ public class BookingServiceTest {
 
         mockitoSettingForOwnerTest();
         Mockito.when(bookingRepository.findAllByItem_Owner_IdAndStatusIsOrderByStartDateDesc(Mockito.anyLong(),
-                        Mockito.any(BookingStatus.class), PageRequest.of(Mockito.anyInt(), Mockito.anyInt())))
+                        Mockito.any(BookingStatus.class), Mockito.any(PageRequest.class)))
                 .thenAnswer(invocationOnMock -> {
                     long ownerId = invocationOnMock.getArgument(0);
                     BookingStatus bookingStatus = invocationOnMock.getArgument(1);
-                    return bookings.stream()
+                    return new PageImpl<>(bookings.stream()
                             .filter(booking -> booking.getItem().getOwner().getId().equals(ownerId))
                             .filter(booking -> booking.getStatus().equals(bookingStatus))
                             .sorted(new BookingStartDateComparator())
-                            .toList();
+                            .toList());
                 });
 
         bookingList = bookingService.findAllByOwner(1L, BookingState.WAITING, 0, 4);
@@ -614,15 +672,15 @@ public class BookingServiceTest {
 
         mockitoSettingForOwnerTest();
         Mockito.when(bookingRepository.findAllByItem_Owner_IdAndStatusIsOrderByStartDateDesc(Mockito.anyLong(),
-                        Mockito.any(BookingStatus.class), PageRequest.of(Mockito.anyInt(), Mockito.anyInt())))
+                        Mockito.any(BookingStatus.class), Mockito.any(PageRequest.class)))
                 .thenAnswer(invocationOnMock -> {
                     long ownerId = invocationOnMock.getArgument(0);
                     BookingStatus bookingStatus = invocationOnMock.getArgument(1);
-                    return bookings.stream()
+                    return new PageImpl<>(bookings.stream()
                             .filter(booking -> booking.getItem().getOwner().getId().equals(ownerId))
                             .filter(booking -> booking.getStatus().equals(bookingStatus))
                             .sorted(new BookingStartDateComparator())
-                            .toList();
+                            .toList());
                 });
 
         bookingList = bookingService.findAllByOwner(1L, BookingState.REJECTED, 0 ,4);
@@ -697,15 +755,15 @@ public class BookingServiceTest {
 
         mockitoSettingForBookerTest();
         Mockito.when(bookingRepository.findAllByUser_IdAndEndDateBeforeOrderByStartDateDesc(Mockito.anyLong(),
-                        Mockito.any(LocalDateTime.class), PageRequest.of(Mockito.anyInt(), Mockito.anyInt())))
+                        Mockito.any(LocalDateTime.class), Mockito.any(PageRequest.class)))
                 .thenAnswer(invocationOnMock -> {
                     long bookerId = invocationOnMock.getArgument(0);
                     LocalDateTime date =  invocationOnMock.getArgument(1);
-                    return bookings.stream()
+                    return new PageImpl<>(bookings.stream()
                             .filter(booking -> booking.getUser().getId().equals(bookerId))
                             .filter(booking -> booking.getStartDate().isBefore(date))
                             .sorted(new BookingStartDateComparator())
-                            .toList();
+                            .toList());
                 });
 
         bookingList = bookingService.findAllByBooker(1L, BookingState.PAST, 0, 4);
@@ -720,15 +778,15 @@ public class BookingServiceTest {
 
         mockitoSettingForBookerTest();
         Mockito.when(bookingRepository.findAllByUser_IdAndEndDateAfterOrderByStartDateDesc(Mockito.anyLong(),
-                        Mockito.any(LocalDateTime.class), PageRequest.of(Mockito.anyInt(), Mockito.anyInt())))
+                        Mockito.any(LocalDateTime.class), Mockito.any(PageRequest.class)))
                 .thenAnswer(invocationOnMock -> {
                     long bookerId = invocationOnMock.getArgument(0);
                     LocalDateTime date =  invocationOnMock.getArgument(1);
-                    return bookings.stream()
+                    return new PageImpl<>(bookings.stream()
                             .filter(booking -> booking.getUser().getId().equals(bookerId))
                             .filter(booking -> booking.getEndDate().isAfter(date))
                             .sorted(new BookingStartDateComparator())
-                            .toList();
+                            .toList());
                 });
 
         bookingList = bookingService.findAllByBooker(1L, BookingState.FUTURE, 0 ,4);
@@ -744,17 +802,17 @@ public class BookingServiceTest {
         mockitoSettingForBookerTest();
         Mockito.when(bookingRepository.findAllByUser_IdAndStartDateBeforeAndEndDateAfterOrderByStartDateDesc(Mockito.anyLong(),
                         Mockito.any(LocalDateTime.class), Mockito.any(LocalDateTime.class),
-                        PageRequest.of(Mockito.anyInt(), Mockito.anyInt())))
+                        Mockito.any(PageRequest.class)))
                 .thenAnswer(invocationOnMock -> {
                     long bookerId = invocationOnMock.getArgument(0);
                     LocalDateTime date1 =  invocationOnMock.getArgument(1);
                     LocalDateTime date2 = invocationOnMock.getArgument(2);
-                    return bookings.stream()
+                    return new PageImpl<>(bookings.stream()
                             .filter(booking -> booking.getUser().getId().equals(bookerId))
                             .filter(booking -> booking.getStartDate().isBefore(date1))
                             .filter(booking -> booking.getEndDate().isAfter(date2))
                             .sorted(new BookingStartDateComparator())
-                            .toList();
+                            .toList());
                 });
 
         bookingList = bookingService.findAllByBooker(1L, BookingState.CURRENT, 0, 4);
@@ -769,15 +827,15 @@ public class BookingServiceTest {
 
         mockitoSettingForBookerTest();
         Mockito.when(bookingRepository.findAllByUser_IdAndStatusIsOrderByStartDateDesc(
-                Mockito.anyLong(), Mockito.any(BookingStatus.class), PageRequest.of(Mockito.anyInt(), Mockito.anyInt())))
+                Mockito.anyLong(), Mockito.any(BookingStatus.class), Mockito.any(PageRequest.class)))
                 .thenAnswer(invocationOnMock -> {
                     long bookerId = invocationOnMock.getArgument(0);
                     BookingStatus bookingStatus = invocationOnMock.getArgument(1);
-                    return bookings.stream()
+                    return new PageImpl<>(bookings.stream()
                             .filter(booking -> booking.getUser().getId().equals(bookerId))
                             .filter(booking -> booking.getStatus().equals(bookingStatus))
                             .sorted(new BookingStartDateComparator())
-                            .toList();
+                            .toList());
                 });
 
         bookingList = bookingService.findAllByBooker(1L, BookingState.WAITING, 0, 4);
@@ -808,15 +866,15 @@ public class BookingServiceTest {
 
         mockitoSettingForBookerTest();
         Mockito.when(bookingRepository.findAllByUser_IdAndStatusIsOrderByStartDateDesc(
-                        Mockito.anyLong(), Mockito.any(BookingStatus.class), PageRequest.of(Mockito.anyInt(), Mockito.anyInt())))
+                        Mockito.anyLong(), Mockito.any(BookingStatus.class), Mockito.any(PageRequest.class)))
                 .thenAnswer(invocationOnMock -> {
                     long bookerId = invocationOnMock.getArgument(0);
                     BookingStatus bookingStatus = invocationOnMock.getArgument(1);
-                    return bookings.stream()
+                    return new PageImpl<>(bookings.stream()
                             .filter(booking -> booking.getUser().getId().equals(bookerId))
                             .filter(booking -> booking.getStatus().equals(bookingStatus))
                             .sorted(new BookingStartDateComparator())
-                            .toList();
+                            .toList());
                 });
 
         bookingList = bookingService.findAllByBooker(1L, BookingState.REJECTED, 0, 4);

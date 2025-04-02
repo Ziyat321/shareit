@@ -541,7 +541,7 @@ public class ItemServiceTest {
         BadRequestException exception = assertThrows(BadRequestException.class,
                 () -> itemService.createComment(comment, 1L, 1L));
 
-        assertEquals("..", exception.getMessage());
+        assertEquals("Booking with such item and user does not exist", exception.getMessage());
     }
 
     @Test
